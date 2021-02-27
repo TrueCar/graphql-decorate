@@ -42,7 +42,7 @@ module GraphQL
         if connection?
           type.node_type.respond_to?(name) && type.node_type.public_send(name)
         elsif resolved_type?
-          type.respond_to?(name) && type.public_send(name)
+          type.respond_to?(name) ? type.public_send(name) : nil
         end
       end
     end

@@ -34,6 +34,16 @@ class Decorator
   def baz
     "#{@object}baz"
   end
+
+  private
+
+  def method_missing(symbol, *args)
+    @object.send(symbol, *args) || super
+  end
+
+  def respond_to_missing?(symbol)
+    @object.respond_to_missing?(symbol)
+  end
 end
 
 class DifferentDecorator
@@ -136,7 +146,7 @@ class Query < BaseObject
   end
 
   def decorated_connection
-    ['foo']
+    ['foo', 'bar', 'baz']
   end
 
   def decorated_type_with_interface
@@ -145,5 +155,6 @@ class Query < BaseObject
 end
 
 class Schema < GraphQL::Schema
+  use GraphQL::Backtrace
   query ::Query
 end

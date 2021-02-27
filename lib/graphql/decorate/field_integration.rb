@@ -15,6 +15,8 @@ module GraphQL
 
       def get_extension_options(type)
         type_attributes = GraphQL::Decorate::TypeAttributes.new(type)
+        return unless type_attributes.decorator_class
+
         {
           decorator_class: type_attributes.decorator_class,
           decorator_evaluator: type_attributes.decorator_evaluator,
@@ -24,10 +26,11 @@ module GraphQL
       end
 
       def extend_with_decorator(options)
-        ext = GraphQL::Decorate::FieldExtension.new(field: self, options: options)
-        @extensions = @extensions.dup
-        @extensions.unshift(ext)
-        @extensions.freeze
+        extension(GraphQL::Decorate::FieldExtension, options)
+        # ext = GraphQL::Decorate::FieldExtension.new(field: self, options: options)
+        # @extensions = @extensions.dup
+        # @extensions.unshift(ext)
+        # @extensions.freeze
       end
     end
   end

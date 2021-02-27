@@ -5,15 +5,17 @@ module GraphQL
       # Extension to be called after lazy loading.
       # @param context [GraphQL::Query::Context] The current GraphQL query context.
       # @param value [Object, GraphQL::Schema::Object] The object being decorated. Can be a schema object if the field hasn't been resolved yet.
-      # @return [Object] Decorated object.
+      # @return [::Object, GraphQL::Decorate::Connection] Decorated object.
       def after_resolve(context:, value:, **_rest)
         return if value.nil?
 
-        collection = collection_classes.any? { |c| value.is_a?(c) }
-        if collection
-          value.map { |item| decorate(item, context) }
+        field_context = GraphQL::Decorate::FieldContext.new(context, options)
+        if value.is_a?(GraphQL::Pagination::Connection)
+          GraphQL::Decorate::Connection.new(value, field_context)
+        elsif collection_classes.any? { |c| value.is_a?(c) }
+          value.map { |item| decorate(item, field_context) }
         else
-          decorate(value, context)
+          decorate(value, field_context)
         end
       end
 
@@ -25,8 +27,8 @@ module GraphQL
         klasses
       end
 
-      def decorate(object, context)
-        GraphQL::Decorate::Resolution.new(object, context, options).resolve
+      def decorate(object, field_context)
+        GraphQL::Decorate::Object.new(object, field_context).decorate
       end
     end
   end
