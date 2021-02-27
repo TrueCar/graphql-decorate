@@ -131,7 +131,8 @@ end
 ### Collections
 By default `graphql-decorate` recognizes `Array` and `ActiveRecord::Relation` object types and 
 decorates every element in the collection. If you have other collection types that should have 
-their elements decorated, you can add them in the configuration.
+their elements decorated, you can add them in the configuration. Custom collection classes must 
+respond to `#map`.
 ```ruby
 GraphQL::Decorate.configure do |config|
   config.custom_collection_classes = [Mongoid::Relations::Targets::Enumerable]
