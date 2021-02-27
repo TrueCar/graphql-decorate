@@ -9,7 +9,9 @@ require_relative 'decorate/type_attributes'
 require_relative 'decorate/field_context'
 require_relative 'decorate/connection'
 
+# Matching the graphql-ruby namespace
 module GraphQL
+  # Entry point for graphql-decorate. Handles configuration.
   module Decorate
     # @return [Configuration] Returns a new instance of GraphQL::Decorate::Configuration.
     def self.configuration

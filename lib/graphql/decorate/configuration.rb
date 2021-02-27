@@ -1,5 +1,6 @@
 module GraphQL
   module Decorate
+    # Allows overriding default decoration and custom collection class behavior.
     class Configuration
       # @return [Proc] Proc that decorates a given object and context with a given decorator class.
       attr_reader :evaluate_decorator

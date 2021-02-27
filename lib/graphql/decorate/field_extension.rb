@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 module GraphQL
   module Decorate
+    # Extension run after fields are resolved to decorate their value.
     class FieldExtension < GraphQL::Schema::FieldExtension
       # Extension to be called after lazy loading.
       # @param context [GraphQL::Query::Context] The current GraphQL query context.
