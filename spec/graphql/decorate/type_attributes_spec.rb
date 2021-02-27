@@ -4,6 +4,20 @@ require 'spec_helper'
 describe GraphQL::Decorate::TypeAttributes do
   subject { described_class.new(type) }
 
+  context 'given a scalar type' do
+    let(:type) { String }
+
+    it 'returns nil or false to all queries except resolved_type?' do
+      expect(subject.decorator_class).to eq(nil)
+      expect(subject.decorator_evaluator).to eq(nil)
+      expect(subject.decorator_context_evaluator).to eq(nil)
+      expect(subject.unresolved_type).to eq(nil)
+      expect(subject.unresolved_type?).to be_falsey
+      expect(subject.resolved_type?).to be_truthy
+      expect(subject.connection?).to be_falsey
+    end
+  end
+
   context 'given an undecorated type' do
     let(:type) { BaseObject }
 
