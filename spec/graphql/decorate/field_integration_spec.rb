@@ -11,7 +11,7 @@ describe GraphQL::Decorate::FieldIntegration do
       decoratedArray {
         bar
       }
-      decoratedConnection {
+      decoratedConnection(first: 1) {
         edges {
           node {
             bar
@@ -30,6 +30,7 @@ describe GraphQL::Decorate::FieldIntegration do
   subject { Schema.execute(query) }
 
   it 'decorates fields' do
+    expect(Decorator).to receive(:decorate).exactly(5).times.and_call_original
     expect(subject['data']['baseField']).to eq('base_field_value')
     expect(subject['data']['decoratedObject']['bar']).to eq('foobar')
     expect(subject['data']['decoratedArray'].first['bar']).to eq('foobar')

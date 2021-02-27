@@ -1,5 +1,6 @@
 module GraphQL
   module Decorate
-    VERSION = "0.1.0"
+    # Current version number
+    VERSION = "0.1.1"
   end
 end

@@ -1,0 +1,38 @@
+name: Ruby Gem
+
+on:
+  release:
+    types: [ published ]
+
+jobs:
+  build:
+    name: Build + Publish
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Ruby 2.6
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: 2.6.x
+
+    - name: Verify version number matches
+      run: |
+        echo "Verifying the version matches the gem version"
+        VERSION_TAG=$(echo $GITHUB_REF | cut -d / -f 3)
+        GEM_VERSION=$(ruby -e "require 'rubygems'; gemspec = Dir.entries('.').find { |file| file =~ /.*\.gemspec/ }; spec = Gem::Specification::load(gemspec); puts spec.version")
+        if [[ $VERSION_TAG != "v$GEM_VERSION" ]]; then
+          echo "Version tag does not match gem version"
+          exit 2;
+        fi
+
+    - name: Publish to RubyGems
+      run: |
+        mkdir -p $HOME/.gem
+        touch $HOME/.gem/credentials
+        chmod 0600 $HOME/.gem/credentials
+        printf -- "---\n:rubygems_api_key: ${GEM_HOST_API_KEY}\n" > $HOME/.gem/credentials
+        gem build *.gemspec
+        gem push *.gem
+      env:
+        GEM_HOST_API_KEY: "${{secrets.RUBYGEMS_AUTH_TOKEN}}"
