@@ -7,10 +7,10 @@ Gem::Specification.new do |spec|
   spec.name          = "graphql-decorate"
   spec.version       = GraphQL::Decorate::VERSION
   spec.authors       = ["Ben Brook"]
-  spec.email         = ["bbrook@truecar.com"]
+  spec.email         = ["bbrook154@gmail.com"]
 
   spec.summary       = 'A decorator integration for the GraphQL gem'
-  spec.homepage      = 'https://git.corp.tc/bbrook/graphql-decorate'
+  spec.homepage      = 'https://www.github.com/TrueCar/graphql-decorate'
   spec.license       = "MIT"
 
   # Specify which files should be added to the gem when it is released.
