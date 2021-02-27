@@ -35,14 +35,26 @@ class Decorator
     "#{@object}baz"
   end
 
-  private
+  class << self
+    private
 
-  def method_missing(symbol, *args)
-    @object.send(symbol, *args) || super
+    def method_missing(symbol, *args, &block)
+      @connection.class.send(symbol, *args, &block)
+    end
+
+    def respond_to_missing?(method, include_private = false)
+      @connection.class.respond_to_missing(method, include_private)
+    end
   end
 
-  def respond_to_missing?(symbol)
-    @object.respond_to_missing?(symbol)
+  private
+
+  def method_missing(symbol, *args, &block)
+    @connection.send(symbol, *args, &block)
+  end
+
+  def respond_to_missing?(method, include_private = false)
+    @connection.respond_to_missing(method, include_private)
   end
 end
 
