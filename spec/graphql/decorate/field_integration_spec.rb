@@ -12,6 +12,9 @@ describe GraphQL::Decorate::FieldIntegration do
         bar
       }
       decoratedConnection(first: 1) {
+        pageInfo {
+          endCursor
+        }
         edges {
           node {
             bar

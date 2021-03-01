@@ -4,10 +4,10 @@ require_relative 'decorate/configuration'
 require_relative 'decorate/object_integration'
 require_relative 'decorate/field_integration'
 require_relative 'decorate/field_extension'
-require_relative 'decorate/object'
+require_relative 'decorate/object_decorator'
 require_relative 'decorate/type_attributes'
 require_relative 'decorate/field_context'
-require_relative 'decorate/connection'
+require_relative 'decorate/connection_wrapper'
 
 # Matching the graphql-ruby namespace
 module GraphQL

@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 module GraphQL
   module Decorate
-    # Wraps a GraphQL::Pagination::Connection object to decorate values after pagination is applied.
-    class Connection
-      # @return [GraphQL::Pagination::Connection] Connection being decorated
+    # Wraps a GraphQL::Pagination::ConnectionWrapper object to decorate values after pagination is applied.
+    class ConnectionWrapper
+      # @return [GraphQL::Pagination::Connection] ConnectionWrapper being decorated
       attr_reader :connection
 
       # @return [GraphQL::Decorate::FieldContext] Current field context
@@ -17,7 +17,7 @@ module GraphQL
       # @return [Array] Decorated nodes after pagination is applied
       def nodes
         nodes = @connection.nodes
-        nodes.map { |node| GraphQL::Decorate::Object.new(node, field_context).decorate }
+        nodes.map { |node| GraphQL::Decorate::ObjectDecorator.new(node, field_context).decorate }
       end
 
       # @see nodes
@@ -30,22 +30,22 @@ module GraphQL
         private
 
         def method_missing(symbol, *args, &block)
-          @connection.class.send(symbol, *args, &block)
+          @connection.class.send(symbol, *args, &block) || super
         end
 
         def respond_to_missing?(method, include_private = false)
-          @connection.class.respond_to_missing(method, include_private)
+          @connection.class.respond_to?(method, include_private)
         end
       end
 
       private
 
       def method_missing(symbol, *args, &block)
-        @connection.send(symbol, *args, &block)
+        @connection.send(symbol, *args, &block) || super
       end
 
       def respond_to_missing?(method, include_private = false)
-        @connection.respond_to_missing(method, include_private)
+        @connection.respond_to?(method, include_private)
       end
     end
   end

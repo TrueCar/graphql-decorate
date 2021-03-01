@@ -2,7 +2,7 @@
 module GraphQL
   module Decorate
     # Handles decorating an object given its current field context.
-    class Object
+    class ObjectDecorator
       # @param object [Object] Object being decorated.
       # @param field_context [GraphQL::Decorate::FieldContext] Current GraphQL field context and options.
       def initialize(object, field_context)
