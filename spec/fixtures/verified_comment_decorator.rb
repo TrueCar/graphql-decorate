@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 class VerifiedCommentDecorator < Decorator
   def disclaimer
     'This user is verified'

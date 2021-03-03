@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module GraphQL
   module Decorate
     # Extension run after fields are resolved to decorate their value.

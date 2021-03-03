@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 class BlogType < BaseObject
   decorate_with BlogDecorator
   decorator_context do |blog|

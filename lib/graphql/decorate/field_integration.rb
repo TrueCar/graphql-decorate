@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module GraphQL
   module Decorate
     # Extends default field behavior and adds extension to the field if it should be decorated.

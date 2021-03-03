@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 class BlogDecorator < Decorator
   def name
     object[:name]

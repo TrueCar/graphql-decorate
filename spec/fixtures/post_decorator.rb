@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 class PostDecorator < Decorator
   def published_status
     context[:published_status]

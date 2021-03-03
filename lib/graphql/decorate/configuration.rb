@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module GraphQL
   module Decorate
     # Allows overriding default decoration and custom collection class behavior.

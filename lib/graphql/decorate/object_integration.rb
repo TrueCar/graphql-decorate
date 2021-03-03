@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module GraphQL
   module Decorate
     # Extends GraphQL::Schema::Object classes with methods to set the desired decorator class and context.

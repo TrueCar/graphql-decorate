@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 class ReactionType < BaseObject
   decorate_with ReactionDecorator
   scoped_decorator_context do |_|

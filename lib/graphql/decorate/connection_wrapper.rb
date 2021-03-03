@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module GraphQL
   module Decorate
     # Wraps a GraphQL::Pagination::ConnectionWrapper object to decorate values after pagination is applied.

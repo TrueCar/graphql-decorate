@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Query < BaseObject
   field :blog, BlogType, null: false
 

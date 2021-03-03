@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module GraphQL
   module Decorate
     # Wraps current GraphQL::Query::Context and options provided to a field for portability.

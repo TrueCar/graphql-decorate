@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module GraphQL
   module Decorate
     # Handles decorating an object given its current field context.

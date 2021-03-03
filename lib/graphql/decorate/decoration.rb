@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module GraphQL
   module Decorate
     # Handles decorating an value at runtime given its current field context.
@@ -28,6 +29,7 @@ module GraphQL
       # @return [Object] Decorated value if possible, otherwise the original value.
       def decorate
         return value unless decorator_class
+
         GraphQL::Decorate.configuration.evaluate_decorator.call(decorator_class, value, decorator_context)
       end
 
@@ -54,7 +56,6 @@ module GraphQL
         field_context.context.scoped_set!(:scoped_decorator_context, resulting_scoped_decorator_context)
         resulting_scoped_decorator_context
       end
-
 
       def decorator_class
         if field_context.options[:decorator_class]

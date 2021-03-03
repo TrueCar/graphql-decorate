@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'graphql'
 require_relative 'decorate/version'
 require_relative 'decorate/configuration'
