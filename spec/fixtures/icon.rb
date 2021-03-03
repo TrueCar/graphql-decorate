@@ -3,8 +3,8 @@ module Icon
   include BaseInterface
 
   definition_methods do
-    def resolve_type(_object, _context)
-      ImageType
+    def resolve_type(object, _context)
+      object[:url] ? ImageType : FileType
     end
   end
 end

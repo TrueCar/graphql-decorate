@@ -33,12 +33,12 @@ describe GraphQL::Decorate::TypeAttributes do
   end
 
   context 'given a decorated type' do
-    let(:type) { DecoratedType }
+    let(:type) { PostType }
 
     it 'returns as a resolved type with the attributes on the type class' do
-      expect(subject.decorator_class).to eq(DecoratedType.decorator_class)
-      expect(subject.decorator_evaluator).to eq(DecoratedType.decorator_evaluator)
-      expect(subject.decorator_context_evaluator).to eq(DecoratedType.decorator_context_evaluator)
+      expect(subject.decorator_class).to eq(PostType.decorator_class)
+      expect(subject.decorator_evaluator).to eq(PostType.decorator_evaluator)
+      expect(subject.decorator_context_evaluator).to eq(PostType.decorator_context_evaluator)
       expect(subject.unresolved_type).to eq(nil)
       expect(subject.unresolved_type?).to be_falsey
       expect(subject.resolved_type?).to be_truthy
@@ -47,12 +47,12 @@ describe GraphQL::Decorate::TypeAttributes do
   end
 
   context 'given a connection type' do
-    let(:type) { DecoratedType.connection_type }
+    let(:type) { PostType.connection_type }
 
     it 'returns as a resolved connection type with the attributes on the node type class' do
-      expect(subject.decorator_class).to eq(DecoratedType.decorator_class)
-      expect(subject.decorator_evaluator).to eq(DecoratedType.decorator_evaluator)
-      expect(subject.decorator_context_evaluator).to eq(DecoratedType.decorator_context_evaluator)
+      expect(subject.decorator_class).to eq(PostType.decorator_class)
+      expect(subject.decorator_evaluator).to eq(PostType.decorator_evaluator)
+      expect(subject.decorator_context_evaluator).to eq(PostType.decorator_context_evaluator)
       expect(subject.unresolved_type).to eq(nil)
       expect(subject.unresolved_type?).to be_falsey
       expect(subject.resolved_type?).to be_truthy
@@ -61,13 +61,13 @@ describe GraphQL::Decorate::TypeAttributes do
   end
 
   context 'given an unresolved type' do
-    let(:type) { DecoratedInterface }
+    let(:type) { Icon }
 
     it 'returns as an unresolved type with no attributes' do
       expect(subject.decorator_class).to eq(nil)
       expect(subject.decorator_evaluator).to eq(nil)
       expect(subject.decorator_context_evaluator).to eq(nil)
-      expect(subject.unresolved_type).to eq(DecoratedInterface)
+      expect(subject.unresolved_type).to eq(Icon)
       expect(subject.unresolved_type?).to be_truthy
       expect(subject.resolved_type?).to be_falsey
       expect(subject.connection?).to be_falsey

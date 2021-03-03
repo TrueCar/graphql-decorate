@@ -17,7 +17,7 @@ module GraphQL
       # @return [Array] Decorated nodes after pagination is applied
       def nodes
         nodes = @connection.nodes
-        GraphQL::Decorate::CollectionDecoration.decorate(nodes, field_context)
+        nodes.map { |node| GraphQL::Decorate::Decoration.decorate(node, connection.parent, connection.field.owner, field_context) }
       end
 
       # @see nodes

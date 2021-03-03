@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 class CommentType < BaseObject
   decorate_when do |comment|
-    comment[:verified_user] ? VerifiedCommentDecorator : UnverifiedCommentDecorator
+    if comment[:verified_user] != nil
+      comment[:verified_user] ? VerifiedCommentDecorator : UnverifiedCommentDecorator
+    end
   end
 
   field :post_owner, String, null: false

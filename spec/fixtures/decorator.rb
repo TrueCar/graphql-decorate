@@ -6,7 +6,10 @@ class Decorator
     @context = context
   end
 
-  class<<self
+  class << self
+    def decorate(object, context:)
+      new(object, context: context)
+    end
     private
 
     def method_missing(method, *args, &block)

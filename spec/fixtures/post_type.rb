@@ -27,7 +27,7 @@ class PostType < BaseObject
     [{ verified_user: true, message: 'My comment 1' }, { verified_user: false, message: 'My comment 2' }]
   end
 
-  def comments_connection
+  def comment_connection
     comments
   end
 

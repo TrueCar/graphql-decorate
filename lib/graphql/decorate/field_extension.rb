@@ -7,16 +7,18 @@ module GraphQL
       # @param context [GraphQL::Query::Context] The current GraphQL query context.
       # @param value [Object, GraphQL::Schema::Object] The object being decorated. Can be a schema object if the field hasn't been resolved yet.
       # @return [Object, GraphQL::Decorate::ConnectionWrapper] Decorated object.
-      def after_resolve(context:, value:, **_rest)
+      def after_resolve(context:, value:, object:, **_rest)
         return if value.nil?
 
         field_context = GraphQL::Decorate::FieldContext.new(context, options)
         if value.is_a?(GraphQL::Pagination::Connection)
           GraphQL::Decorate::ConnectionWrapper.new(value, field_context)
         elsif collection_classes.any? { |c| value.is_a?(c) }
-          GraphQL::Decorate::CollectionDecoration.decorate(value, field_context)
+          value.map do |item|
+            GraphQL::Decorate::Decoration.decorate(item, object.object, object.class, field_context)
+          end
         else
-          GraphQL::Decorate::ObjectDecoration.decorate(value, field_context)
+          GraphQL::Decorate::Decoration.decorate(value, object.object, object.class, field_context)
         end
       end
 
