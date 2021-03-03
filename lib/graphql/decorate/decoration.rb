@@ -47,8 +47,8 @@ module GraphQL
 
       def scoped_decoration_context
         new_scoped_decoration_contexts = [
-          parent_type_attributes.scoped_decorator_context_evaluator ? parent_type_attributes.scoped_decorator_context_evaluator.call(parent_value) : {},
-          scoped_decorator_context_evaluator ? scoped_decorator_context_evaluator.call(value) : {}
+          parent_type_attributes.scoped_decorator_context_evaluator ? parent_type_attributes.scoped_decorator_context_evaluator.call(parent_value, field_context) : {},
+          scoped_decorator_context_evaluator ? scoped_decorator_context_evaluator.call(value, field_context) : {}
         ]
         new_scoped_decoration_context = {}.merge(*new_scoped_decoration_contexts)
         existing_scoped_decoration_context = field_context.context[:scoped_decorator_context] || {}
@@ -62,8 +62,10 @@ module GraphQL
           field_context.options[:decorator_class]
         elsif field_context.options[:decorator_evaluator]
           field_context.options[:decorator_evaluator].call(value)
-        else
+        elsif resolve_decorator_class
           resolve_decorator_class
+        elsif resolve_decorator_evaluator
+          resolve_decorator_evaluator.call(value)
         end
       end
 
@@ -79,6 +81,13 @@ module GraphQL
         type = resolve_type
         if type.respond_to?(:decorator_class) && type.decorator_class
           type.decorator_class
+        end
+      end
+
+      def resolve_decorator_evaluator
+        type = resolve_type
+        if type.respond_to?(:decorator_evaluator) && type.decorator_evaluator
+          type.decorator_evaluator
         end
       end
 

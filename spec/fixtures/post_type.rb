@@ -22,7 +22,7 @@ class PostType < BaseObject
   field :name, String, null: false
   field :comments, [CommentType], null: false
   field :comment_connection, CommentType.connection_type, null: false
-  field :icon, Icon, null: false
+  field :icons, [Icon], null: false
 
   def comments
     [{ verified_user: true, message: 'My comment 1' }, { verified_user: false, message: 'My comment 2' }]
@@ -40,7 +40,7 @@ class PostType < BaseObject
     object[:last_name]
   end
 
-  def icon
-    { url: 'https://www.image.com' }
+  def icons
+    [{ url: 'https://www.image.com' }, { url: 'placeholder' }]
   end
 end

@@ -90,7 +90,7 @@ describe GraphQL::Decorate::FieldIntegration do
       query {
         blog {
           posts {
-            icon {
+            icons {
               ... on Image {
                 url
                 alternateText
@@ -105,8 +105,10 @@ describe GraphQL::Decorate::FieldIntegration do
       expect(BlogDecorator).to receive(:new).exactly(1).times.and_call_original
       expect(PostDecorator).to receive(:new).exactly(2).times.and_call_original
       expect(ImageDecorator).to receive(:new).exactly(2).times.and_call_original
-      expect(subject['data']['blog']['posts'][0]['icon']['url']).to eq('https://www.image.com')
-      expect(subject['data']['blog']['posts'][0]['icon']['alternateText']).to eq('Profile picture')
+      expect(subject['data']['blog']['posts'][0]['icons'][0]['url']).to eq('https://www.image.com')
+      expect(subject['data']['blog']['posts'][0]['icons'][0]['alternateText']).to eq('Profile picture')
+      expect(subject['data']['blog']['posts'][0]['icons'][1]['url']).to eq('placeholder')
+      expect(subject['data']['blog']['posts'][0]['icons'][1]['alternateText']).to eq('Placeholder')
     end
   end
 
