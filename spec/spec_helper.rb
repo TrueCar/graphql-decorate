@@ -15,158 +15,22 @@ RSpec.configure do |config|
   config.expose_dsl_globally = true
 end
 
-class Decorator
-  attr_reader :object, :context
-
-  def initialize(object, context)
-    @object = object
-    @context = context
-  end
-
-  def self.decorate(object, context)
-    new(object, context)
-  end
-
-  def bar
-    "#{@object}bar"
-  end
-
-  def baz
-    "#{@object}baz"
-  end
-
-  class << self
-    private
-
-    def method_missing(symbol, *args, &block)
-      @connection.class.send(symbol, *args, &block)
-    end
-
-    def respond_to_missing?(method, include_private = false)
-      @connection.class.respond_to_missing(method, include_private)
-    end
-  end
-
-  private
-
-  def method_missing(symbol, *args, &block)
-    @connection.send(symbol, *args, &block)
-  end
-
-  def respond_to_missing?(method, include_private = false)
-    @connection.respond_to_missing(method, include_private)
-  end
-end
-
-class DifferentDecorator
-  attr_reader :object
-
-  def self.decorate_differently(object)
-    new(object)
-  end
-
-  def initialize(object)
-    @object = object
-  end
-end
-
-module ActiveRecord
-  class Relation
-    def initialize(collection)
-      @collection = collection
-    end
-
-    def map(&block)
-      @collection.map(&block)
-    end
-  end
-end
-
-class CustomCollection
-  def initialize(collection)
-    @collection = collection
-  end
-
-  def map(&block)
-    @collection.map(&block)
-  end
-end
-
-class BaseField < GraphQL::Schema::Field
-  include GraphQL::Decorate::FieldIntegration
-end
-
-class BaseObject < GraphQL::Schema::Object
-  extend GraphQL::Decorate::ObjectIntegration
-
-  field_class BaseField
-end
-
-class DecoratedType < BaseObject
-  decorate_with Decorator
-  decorate_when do |_object|
-    Decorator
-  end
-  decorator_context do |_object|
-    {}
-  end
-
-  field :bar, String, null: false
-end
-
-module BaseInterface
-  include GraphQL::Schema::Interface
-  field_class BaseField
-end
-
-module DecoratedInterface
-  include BaseInterface
-
-  field :bar, String, null: false
-
-  definition_methods do
-    def resolve_type(_object, _context)
-      DecoratedType
-    end
-  end
-end
-
-class DecoratedTypeWithInterface < BaseObject
-  implements DecoratedInterface
-  decorate_with Decorator
-
-  field :baz, String, null: false
-end
-
-class Query < BaseObject
-  field :base_field, String, null: false
-  field :decorated_object, DecoratedType, null: false
-  field :decorated_array, [DecoratedType], null: false
-  field :decorated_connection, DecoratedType.connection_type, null: false
-  field :decorated_type_with_interface, DecoratedTypeWithInterface, null: false
-
-  def base_field
-    'base_field_value'
-  end
-
-  def decorated_object
-    'foo'
-  end
-
-  def decorated_array
-    ['foo']
-  end
-
-  def decorated_connection
-    ['foo', 'bar', 'baz']
-  end
-
-  def decorated_type_with_interface
-    'foo'
-  end
-end
-
-class Schema < GraphQL::Schema
-  use GraphQL::Backtrace
-  query ::Query
-end
+require_relative 'fixtures/decorator.rb'
+require_relative 'fixtures/active_record.rb'
+require_relative 'fixtures/base_field.rb'
+require_relative 'fixtures/base_interface.rb'
+require_relative 'fixtures/base_object.rb'
+require_relative 'fixtures/reaction_decorator.rb'
+require_relative 'fixtures/reaction_type.rb'
+require_relative 'fixtures/verified_comment_decorator'
+require_relative 'fixtures/unverified_comment_decorator'
+require_relative 'fixtures/comment_type.rb'
+require_relative 'fixtures/icon.rb'
+require_relative 'fixtures/image_decorator.rb'
+require_relative 'fixtures/image_type.rb'
+require_relative 'fixtures/post_decorator'
+require_relative 'fixtures/post_type.rb'
+require_relative 'fixtures/blog_decorator.rb'
+require_relative 'fixtures/blog_type.rb'
+require_relative 'fixtures/query.rb'
+require_relative 'fixtures/schema.rb'

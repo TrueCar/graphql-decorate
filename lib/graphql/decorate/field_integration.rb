@@ -16,12 +16,13 @@ module GraphQL
 
       def get_extension_options(type)
         type_attributes = GraphQL::Decorate::TypeAttributes.new(type)
-        return unless type_attributes.decorator_class
+        return unless type_attributes.decoratable?
 
         {
           decorator_class: type_attributes.decorator_class,
           decorator_evaluator: type_attributes.decorator_evaluator,
           decorator_context_evaluator: type_attributes.decorator_context_evaluator,
+          scoped_decorator_context_evaluator: type_attributes.scoped_decorator_context_evaluator,
           unresolved_type: type_attributes.unresolved_type
         }
       end

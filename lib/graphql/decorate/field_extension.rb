@@ -14,9 +14,9 @@ module GraphQL
         if value.is_a?(GraphQL::Pagination::Connection)
           GraphQL::Decorate::ConnectionWrapper.new(value, field_context)
         elsif collection_classes.any? { |c| value.is_a?(c) }
-          value.map { |item| decorate(item, field_context) }
+          GraphQL::Decorate::CollectionDecoration.decorate(value, field_context)
         else
-          decorate(value, field_context)
+          GraphQL::Decorate::ObjectDecoration.decorate(value, field_context)
         end
       end
 
@@ -26,10 +26,6 @@ module GraphQL
         klasses = [Array] + GraphQL::Decorate.configuration.custom_collection_classes
         klasses << ::ActiveRecord::Relation if defined?(ActiveRecord::Relation)
         klasses
-      end
-
-      def decorate(object, field_context)
-        GraphQL::Decorate::ObjectDecorator.new(object, field_context).decorate
       end
     end
   end

@@ -22,6 +22,13 @@ module GraphQL
         @decorator_context_evaluator = block
       end
 
+      # Pass additional data to the decorator context (if supported). All child fields will also receive the same context.
+      # @yield [object] Gives the underlying object to the block.
+      # @return [Proc] Proc to evaluate decorator context. Proc should return Hash.
+      def scoped_decorator_context(&block)
+        @scoped_decorator_context_evaluator = block
+      end
+
       # @return [Class, nil] Gets the currently set decorator class.
       def decorator_class
         @decorator_class
@@ -35,6 +42,11 @@ module GraphQL
       # @return [Proc, nil] Gets the currently set decorator context evaluator.
       def decorator_context_evaluator
         @decorator_context_evaluator
+      end
+
+      # @return [Proc, nil] Gets the currently set scoped decorator context evaluator.
+      def scoped_decorator_context_evaluator
+        @scoped_decorator_context_evaluator
       end
     end
   end

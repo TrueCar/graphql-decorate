@@ -78,17 +78,17 @@ describe GraphQL::Decorate::FieldExtension do
     end
 
     it 'adds graphql to the decorator context' do
-      expect(subject.context).to include(context: { graphql: true })
+      expect(subject.context).to include(graphql: true)
     end
 
     context 'when a decorator context evaluator is provided' do
-      let(:decorator_context_evaluator) { ->(object) { { custom_context: object + 'bar' } } }
-      let(:custom_context) { decorator_context_evaluator.call(value) }
+      let(:decorator_context_evaluator) { ->(object, _field_context) { { custom_context: object + 'bar' } } }
+      let(:custom_context) { decorator_context_evaluator.call(value, {}) }
 
       let(:options) { { decorator_class: Decorator, decorator_context_evaluator: decorator_context_evaluator } }
 
       it 'populates decorator context using the evaluated data' do
-        expect(subject.context).to include({ context: { graphql: true }.merge(custom_context) })
+        expect(subject.context).to include({ graphql: true }.merge(custom_context))
       end
     end
   end
@@ -219,13 +219,13 @@ describe GraphQL::Decorate::FieldExtension do
     end
 
     context 'when a decorator context evaluator is provided' do
-      let(:decorator_context_evaluator) { ->(object) { { custom_context: object + 'bar' } } }
-      let(:custom_context) { decorator_context_evaluator.call(object) }
+      let(:decorator_context_evaluator) { ->(object, _field_context) { { custom_context: object + 'bar' } } }
+      let(:custom_context) { decorator_context_evaluator.call(object, {}) }
 
       let(:options) { { decorator_class: Decorator, decorator_context_evaluator: decorator_context_evaluator } }
 
       it 'populates decorator context using the evaluated data' do
-        expect(subject.first.context).to include({ context: { graphql: true }.merge(custom_context) })
+        expect(subject.first.context).to include({ graphql: true }.merge(custom_context))
       end
     end
   end

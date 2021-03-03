@@ -10,7 +10,7 @@ module GraphQL
 
       def initialize
         @evaluate_decorator = lambda do |decorator_class, object, context|
-          decorator_class.decorate(object, context: context)
+          decorator_class.new(object, context: context)
         end
         @custom_collection_classes = []
       end
