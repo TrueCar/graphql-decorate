@@ -39,6 +39,16 @@ describe GraphQL::Decorate::FieldExtension do
 
       context 'when the resolved type has a decorator class' do
         let(:unresolved_type) { Icon }
+        let(:value) { {} }
+
+        it 'decorates the value using the decorator on the newly resolved type' do
+          expect(subject).to be_a(MissingDecorator)
+          expect(subject.object).to eq(value)
+        end
+      end
+
+      context 'when the resolved type has a decorator class evaluator' do
+        let(:unresolved_type) { Icon }
         let(:value) { { url: 'https://www.image.com' } }
 
         it 'decorates the value using the decorator on the newly resolved type' do
@@ -129,6 +139,16 @@ describe GraphQL::Decorate::FieldExtension do
       let(:unresolved_type) { Icon }
 
       context 'when the resolved type has a decorator class' do
+        let(:inner_value) { {} }
+
+        it 'decorates the value using the decorator on the newly resolved type' do
+          expect(subject).to be_a(Array)
+          expect(subject.first).to be_a(MissingDecorator)
+          expect(subject.first.object).to eq(inner_value)
+        end
+      end
+
+      context 'when the resolved type has a decorator class evaluator' do
         let(:inner_value) { { url: 'https://www.image.com' } }
 
         it 'decorates the value using the decorator on the newly resolved type' do
@@ -214,6 +234,15 @@ describe GraphQL::Decorate::FieldExtension do
       it 'populates decorator context using the evaluated data' do
         expect(subject.first.context).to include({ graphql: true }.merge(custom_context))
       end
+    end
+  end
+
+  context 'when the value being resolved is a connection' do
+    let(:value) { GraphQL::Pagination::ArrayConnection.new([{ first_name: 'Bob', last_name: 'Boberson', published: true }]) }
+
+    it 'returns a connection wrapper that delegates to the connection' do
+      expect(subject).to be_a(GraphQL::Decorate::ConnectionWrapper)
+      expect(subject.connection).to eq(value)
     end
   end
 

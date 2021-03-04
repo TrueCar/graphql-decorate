@@ -6,13 +6,13 @@ module GraphQL
     class FieldExtension < GraphQL::Schema::FieldExtension
       # Extension to be called after lazy loading.
       # @param context [GraphQL::Query::Context] The current GraphQL query context.
-      # @param value [Object, GraphQL::Schema::Object] The object being decorated. Can be a schema object if the field hasn't been resolved yet.
+      # @param value [Object, GraphQL::Schema::Object, GraphQL::Pagination::Connection] The object being decorated. Can be a schema object if the field hasn't been resolved yet or a connection.
       # @return [Object, GraphQL::Decorate::ConnectionWrapper] Decorated object.
       def after_resolve(context:, value:, object:, **_rest)
         return if value.nil?
 
         if value.is_a?(GraphQL::Pagination::Connection)
-          GraphQL::Decorate::ConnectionWrapper.new(value, context, options)
+          GraphQL::Decorate::ConnectionWrapper.wrap(value, context, options)
         elsif collection_classes.any? { |c| value.is_a?(c) }
           value.map do |item|
             unresolved_field = GraphQL::Decorate::UndecoratedField.new(item, object.object, object.class, context, options)

@@ -7,10 +7,23 @@ module GraphQL
       # @return [GraphQL::Pagination::Connection] ConnectionWrapper being decorated
       attr_reader :connection
 
-      # @return [GraphQL::Decorate::UndecoratedField] Current field context
+      # @return [GraphQL::Query::Context] Current query context
       attr_reader :context
+
+      # @return [Hash] Options provided to the field extension
       attr_reader :options
 
+      # @param connection [GraphQL::Pagination::Connection] ConnectionWrapper being decorated
+      # @param context [GraphQL::Query::Context] Current query context
+      # @param options [Hash] Options provided to the field extension
+      def self.wrap(connection, context, options)
+        @connection_class = connection.class
+        new(connection, context, options)
+      end
+
+      # @param connection [GraphQL::Pagination::Connection] ConnectionWrapper being decorated
+      # @param context [GraphQL::Query::Context] Current query context
+      # @param options [Hash] Options provided to the field extension
       def initialize(connection, context, options)
         @connection = connection
         @context = context
@@ -36,11 +49,11 @@ module GraphQL
         private
 
         def method_missing(symbol, *args, &block)
-          @connection.class.send(symbol, *args, &block) || super
+          @connection_class.send(symbol, *args, &block) || super
         end
 
         def respond_to_missing?(method, include_private = false)
-          @connection.class.respond_to?(method, include_private)
+          @connection_class.respond_to?(method, include_private)
         end
       end
 
