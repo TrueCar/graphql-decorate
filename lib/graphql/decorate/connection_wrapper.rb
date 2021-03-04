@@ -7,18 +7,23 @@ module GraphQL
       # @return [GraphQL::Pagination::Connection] ConnectionWrapper being decorated
       attr_reader :connection
 
-      # @return [GraphQL::Decorate::FieldContext] Current field context
-      attr_reader :field_context
+      # @return [GraphQL::Decorate::UndecoratedField] Current field context
+      attr_reader :context
+      attr_reader :options
 
-      def initialize(connection, field_context)
+      def initialize(connection, context, options)
         @connection = connection
-        @field_context = field_context
+        @context = context
+        @options = options
       end
 
       # @return [Array] Decorated nodes after pagination is applied
       def nodes
         nodes = @connection.nodes
-        nodes.map { |node| GraphQL::Decorate::Decoration.decorate(node, connection.parent, connection.field.owner, field_context) }
+        nodes.map do |node|
+          unresolved_field = GraphQL::Decorate::UndecoratedField.new(node, connection.parent, connection.field.owner, context, options)
+          GraphQL::Decorate::Decoration.decorate(unresolved_field)
+        end
       end
 
       # @see nodes

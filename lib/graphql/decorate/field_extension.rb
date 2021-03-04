@@ -11,15 +11,16 @@ module GraphQL
       def after_resolve(context:, value:, object:, **_rest)
         return if value.nil?
 
-        field_context = GraphQL::Decorate::FieldContext.new(context, options)
         if value.is_a?(GraphQL::Pagination::Connection)
-          GraphQL::Decorate::ConnectionWrapper.new(value, field_context)
+          GraphQL::Decorate::ConnectionWrapper.new(value, context, options)
         elsif collection_classes.any? { |c| value.is_a?(c) }
           value.map do |item|
-            GraphQL::Decorate::Decoration.decorate(item, object.object, object.class, field_context)
+            unresolved_field = GraphQL::Decorate::UndecoratedField.new(item, object.object, object.class, context, options)
+            GraphQL::Decorate::Decoration.decorate(unresolved_field)
           end
         else
-          GraphQL::Decorate::Decoration.decorate(value, object.object, object.class, field_context)
+          unresolved_field = GraphQL::Decorate::UndecoratedField.new(value, object.object, object.class, context, options)
+          GraphQL::Decorate::Decoration.decorate(unresolved_field)
         end
       end
 
