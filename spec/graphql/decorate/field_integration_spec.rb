@@ -45,6 +45,9 @@ describe GraphQL::Decorate::FieldIntegration do
       query {
         blog {
           postConnection {
+            pageInfo {
+              endCursor
+            }
             nodes {
               firstName
               name

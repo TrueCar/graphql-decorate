@@ -1,5 +1,11 @@
 # frozen_string_literal: true
 
+require 'simplecov'
+SimpleCov.start do
+  add_filter '/spec/'
+  minimum_coverage 100
+end
+
 require 'bundler/setup'
 require 'graphql/decorate'
 
