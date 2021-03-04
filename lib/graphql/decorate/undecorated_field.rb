@@ -34,7 +34,7 @@ module GraphQL
         end
       end
 
-      # @return [Hash] Context to be provided to a decorator for the current field
+      # @return [Hash] Metadata to be provided to a decorator for the current field
       def metadata
         default_metadata.merge(unscoped_metadata, scoped_metadata)
       end
