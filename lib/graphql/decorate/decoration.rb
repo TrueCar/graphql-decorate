@@ -19,7 +19,7 @@ module GraphQL
       # @return [Object] Decorated undecorated_field.value if possible, otherwise the original undecorated_field.value.
       def decorate
         if undecorated_field.decorator_class
-          GraphQL::Decorate.configuration.evaluate_decorator.call(undecorated_field.decorator_class, undecorated_field.value, undecorated_field.decorator_context)
+          GraphQL::Decorate.configuration.evaluate_decorator.call(undecorated_field.decorator_class, undecorated_field.value, undecorated_field.metadata)
         else
           undecorated_field.value
         end

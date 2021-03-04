@@ -20,8 +20,8 @@ describe GraphQL::Decorate::FieldExtension do
     context 'using a different decorator setup' do
       before do
         GraphQL::Decorate.configure do |config|
-          config.decorate do |decorator_class, object, _context|
-            decorator_class.new(object, context: context)
+          config.decorate do |decorator_class, object, metadata|
+            decorator_class.new(object, context: metadata)
           end
         end
       end
@@ -85,10 +85,10 @@ describe GraphQL::Decorate::FieldExtension do
     end
 
     context 'when a decorator context evaluator is provided' do
-      let(:decorator_context_evaluator) { PostType.decorator_context_evaluator }
-      let(:custom_context) { decorator_context_evaluator.call(value, {}) }
+      let(:metadata_evaluator) { PostType.metadata_evaluator }
+      let(:custom_context) { metadata_evaluator.call(value, {}) }
 
-      let(:options) { { decorator_class: PostDecorator, decorator_context_evaluator: decorator_context_evaluator } }
+      let(:options) { { decorator_class: PostDecorator, metadata_evaluator: metadata_evaluator } }
 
       it 'populates decorator context using the evaluated data' do
         expect(subject.context).to include({ graphql: true }.merge(custom_context))
@@ -109,8 +109,8 @@ describe GraphQL::Decorate::FieldExtension do
     context 'using a different decorator setup' do
       before do
         GraphQL::Decorate.configure do |config|
-          config.decorate do |decorator_class, object, context|
-            decorator_class.new(object, context: context)
+          config.decorate do |decorator_class, object, metadata|
+            decorator_class.new(object, context: metadata)
           end
         end
       end
@@ -206,10 +206,10 @@ describe GraphQL::Decorate::FieldExtension do
     end
 
     context 'when a decorator context evaluator is provided' do
-      let(:decorator_context_evaluator) { PostType.decorator_context_evaluator }
-      let(:custom_context) { decorator_context_evaluator.call(inner_value, {}) }
+      let(:metadata_evaluator) { PostType.metadata_evaluator }
+      let(:custom_context) { metadata_evaluator.call(inner_value, {}) }
 
-      let(:options) { { decorator_class: PostDecorator, decorator_context_evaluator: decorator_context_evaluator } }
+      let(:options) { { decorator_class: PostDecorator, metadata_evaluator: metadata_evaluator } }
 
       it 'populates decorator context using the evaluated data' do
         expect(subject.first.context).to include({ graphql: true }.merge(custom_context))

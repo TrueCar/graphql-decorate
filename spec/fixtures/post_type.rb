@@ -2,13 +2,13 @@
 
 class PostType < BaseObject
   decorate_with PostDecorator
-  decorator_context do |post|
+  decorator_metadata do |post|
     {
       published_status: post[:published]
     }
   end
 
-  scoped_decorator_context do |post|
+  scoped_decorator_metadata do |post|
     {
       post_owner: post[:first_name]
     }

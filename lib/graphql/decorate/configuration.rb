@@ -11,8 +11,8 @@ module GraphQL
       attr_accessor :custom_collection_classes
 
       def initialize
-        @evaluate_decorator = lambda do |decorator_class, object, context|
-          decorator_class.decorate(object, context: context)
+        @evaluate_decorator = lambda do |decorator_class, object, metadata|
+          decorator_class.decorate(object, context: metadata)
         end
         @custom_collection_classes = []
       end

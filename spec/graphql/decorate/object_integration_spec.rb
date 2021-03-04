@@ -9,7 +9,7 @@ describe GraphQL::Decorate::ObjectIntegration do
       decorate_when do |object|
         object.is_a?(Hash) ? 'hash' : 'string'
       end
-      decorator_context do |object|
+      decorator_metadata do |object|
         object.is_a?(Hash) ? 'hash context' : 'string context'
       end
     end
@@ -24,6 +24,6 @@ describe GraphQL::Decorate::ObjectIntegration do
   end
 
   it 'sets a decorator context evaluator on the type class' do
-    expect(type.decorator_context_evaluator.call({})).to eq('hash context')
+    expect(type.metadata_evaluator.call({})).to eq('hash context')
   end
 end

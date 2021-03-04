@@ -2,7 +2,7 @@
 
 class ReactionType < BaseObject
   decorate_with ReactionDecorator
-  scoped_decorator_context do |_|
+  scoped_decorator_metadata do |_|
     {
       post_owner: 'Rod'
     }

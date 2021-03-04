@@ -2,13 +2,13 @@
 
 class BlogType < BaseObject
   decorate_with BlogDecorator
-  decorator_context do |blog|
+  decorator_metadata do |blog|
     {
       active: blog[:active]
     }
   end
 
-  scoped_decorator_context do |_blog|
+  scoped_decorator_metadata do |_blog|
     {
       owner: 'Bill Billerson'
     }

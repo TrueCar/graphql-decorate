@@ -61,15 +61,15 @@ In this example, the `Rectangle` type is being decorated with a `RectangleDecora
 ### Decorators
 By default, `graphql-decorate` is set up to work with Draper-style decorators. These decorators 
 provide a `decorate` method that wraps the original object and returns an instance of the 
-decorator. They can also take in an additional context hash.
+decorator. They can also take in additional metadata.
 ```ruby
-RectangleDecorator.decorate(rectangle, context)
+RectangleDecorator.decorate(rectangle, context: metadata)
 ```
 If you are using a different decorator pattern then you can override this default behavior in 
 the configuration.
 ```ruby
 GraphQL::Decorate.configure do |config|
-  config.decorate do |decorator_class, object, _context|
+  config.decorate do |decorator_class, object, _metadata|
     decorator_class.decorate_differently(object)
   end
 end
@@ -99,20 +99,66 @@ class Rectangle < GraphQL::Schema::Object
   end
 end
 ```
-
-#### decorator_context
-`decorator_context` accepts a block which yields the underlying object. If your decorator pattern 
-allows additional context being passed into the decorators, you can define it here.
+`decorate_when` also optionally yields the current GraphQL `context`.
 ```ruby
 class Rectangle < GraphQL::Schema::Object
-  decorator_context do |object|
+  decorate_when do |object, context|
+    # Do something with context
+  end
+end
+```
+#### decorator_metadata
+`decorator_metadata` accepts a block which yields the underlying object. If your decorator pattern 
+allows additional metadata being passed into the decorators, you can define it here.
+```ruby
+class Rectangle < GraphQL::Schema::Object
+  decorator_metadata do |object|
     {
       name: object.name
     }
   end
 end
 ```
-`RectangleDecorator` will be initialized with a context of `{ name: <object_name> }`. 
+`RectangleDecorator` will be initialized with a metadata of `{ name: <object_name> }`.
+`decorator_metadata` also optionally yields the current GraphQL `context`.
+```ruby
+class Rectangle < GraphQL::Schema::Object
+  decorator_metadata do |object, context|
+    # Do something with context
+  end
+end
+```
+
+#### scoped_decorator_metadata
+`scoped_decorator_metadata` functions similarly to `decorator_metadata`. Each decorated type with 
+the `scoped_decorator_metadata` block defined will apply additional metadata to the decorator. The 
+difference is that _every child field_ of the type will also receive the same metadata from 
+further up in the tree. If a child field redefines the `scoped_decorator_metadata` then it will 
+replace anything given from above and propagate the new metadata. This is useful for decorators 
+that might depend on state from a field far above them.
+```ruby
+class Rectangle < GraphQL::Schema::Object
+  scoped_decorator_metadata do |object|
+    {
+      name: object.name
+    }
+  end
+  
+  field :detailed_properties, DetailedProperties, null: false
+end
+```
+`RectangleDecorator` will be initialized with a metadata of `{ name: <object_name> }`. 
+The decorator of `DetailedProperties` will also be initialized with a metadata 
+of `{ name: <object_name> }`. `scoped_decorator_metadata` also optionally yields the current GraphQL 
+`context`.
+
+```ruby
+class Rectangle < GraphQL::Schema::Object
+  scoped_decorator_metadata do |object, context|
+    # Do something with context
+  end
+end
+```
 
 #### Combinations
 You can mix and match these methods to suit your needs. Note that if `decorate_with` and 
@@ -120,7 +166,7 @@ You can mix and match these methods to suit your needs. Note that if `decorate_w
 ```ruby
 class Rectangle < GraphQL::Schema::Object
   decorate_with RectangleDecorator
-  decorator_context do |object|
+  decorator_metadata do |object|
     {
       name: object.name
     }

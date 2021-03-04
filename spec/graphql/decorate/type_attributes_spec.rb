@@ -11,7 +11,7 @@ describe GraphQL::Decorate::TypeAttributes do
     it 'returns nil or false to all queries except resolved_type?' do
       expect(subject.decorator_class).to eq(nil)
       expect(subject.decorator_evaluator).to eq(nil)
-      expect(subject.decorator_context_evaluator).to eq(nil)
+      expect(subject.metadata_evaluator).to eq(nil)
       expect(subject.unresolved_type).to eq(nil)
       expect(subject.unresolved_type?).to be_falsey
       expect(subject.resolved_type?).to be_truthy
@@ -25,7 +25,7 @@ describe GraphQL::Decorate::TypeAttributes do
     it 'returns nil or false to all queries except resolved_type?' do
       expect(subject.decorator_class).to eq(nil)
       expect(subject.decorator_evaluator).to eq(nil)
-      expect(subject.decorator_context_evaluator).to eq(nil)
+      expect(subject.metadata_evaluator).to eq(nil)
       expect(subject.unresolved_type).to eq(nil)
       expect(subject.unresolved_type?).to be_falsey
       expect(subject.resolved_type?).to be_truthy
@@ -39,7 +39,7 @@ describe GraphQL::Decorate::TypeAttributes do
     it 'returns as a resolved type with the attributes on the type class' do
       expect(subject.decorator_class).to eq(PostType.decorator_class)
       expect(subject.decorator_evaluator).to eq(PostType.decorator_evaluator)
-      expect(subject.decorator_context_evaluator).to eq(PostType.decorator_context_evaluator)
+      expect(subject.metadata_evaluator).to eq(PostType.metadata_evaluator)
       expect(subject.unresolved_type).to eq(nil)
       expect(subject.unresolved_type?).to be_falsey
       expect(subject.resolved_type?).to be_truthy
@@ -53,7 +53,7 @@ describe GraphQL::Decorate::TypeAttributes do
     it 'returns as a resolved connection type with the attributes on the node type class' do
       expect(subject.decorator_class).to eq(PostType.decorator_class)
       expect(subject.decorator_evaluator).to eq(PostType.decorator_evaluator)
-      expect(subject.decorator_context_evaluator).to eq(PostType.decorator_context_evaluator)
+      expect(subject.metadata_evaluator).to eq(PostType.metadata_evaluator)
       expect(subject.unresolved_type).to eq(nil)
       expect(subject.unresolved_type?).to be_falsey
       expect(subject.resolved_type?).to be_truthy
@@ -67,7 +67,7 @@ describe GraphQL::Decorate::TypeAttributes do
     it 'returns as an unresolved type with no attributes' do
       expect(subject.decorator_class).to eq(nil)
       expect(subject.decorator_evaluator).to eq(nil)
-      expect(subject.decorator_context_evaluator).to eq(nil)
+      expect(subject.metadata_evaluator).to eq(nil)
       expect(subject.unresolved_type).to eq(Icon)
       expect(subject.unresolved_type?).to be_truthy
       expect(subject.resolved_type?).to be_falsey
