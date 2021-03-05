@@ -11,10 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Ruby 2.6
+      - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.6
+          bundler-cache: true
       - name: Check documentation completion
         run: |
           completion_percentage=$(bundle exec yard | tee /dev/stdout  | tail -1 | cut -d'%' -f1 | xargs)
