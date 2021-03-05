@@ -76,7 +76,11 @@ end
 ```
 
 ### Types
-Three methods are made available on your type classes
+Three methods are made available on your type classes: `decorate_with`, `decorator_metadata`, 
+and `scoped_decorator_metadata`. Every method that yields the underlying object will also yield 
+the current GraphQL `context`. If decoration depends on some context in the current query then 
+you can access it when the field is resolved.
+
 #### decorate_with
 `decorate_with` accepts a decorator class that will decorate every instance of your type.
 ```ruby
@@ -85,12 +89,11 @@ class Rectangle < GraphQL::Schema::Object
 end
 ```
 
-#### decorate_when
-`decorate_when` accepts a block which yields the underlying object. If you have multiple 
+`decorate_with` optionally accepts a block which yields the underlying object. If you have multiple 
 possible decorator classes you can return the one intended for the underling object.
 ```ruby
 class Rectangle < GraphQL::Schema::Object
-  decorate_when do |object|
+  decorate_with do |object, _graphql_context|
     if object.length == object.width
       SquareDecorator
     else
@@ -99,35 +102,24 @@ class Rectangle < GraphQL::Schema::Object
   end
 end
 ```
-`decorate_when` also optionally yields the current GraphQL `context`.
-```ruby
-class Rectangle < GraphQL::Schema::Object
-  decorate_when do |object, context|
-    # Do something with context
-  end
-end
-```
+
 #### decorator_metadata
 `decorator_metadata` accepts a block which yields the underlying object. If your decorator pattern 
-allows additional metadata being passed into the decorators, you can define it here.
+allows additional metadata to be passed into the decorators, you can define it here. By default 
+ every metadata hash will also contain `{ graphql: true }`. This is useful if your decorator 
+logic needs to diverge when used in a GraphQL context. Ideally this metadata shouldn't be used 
+and your decorators are agnostic to where they are being used, but it is available if needed.
 ```ruby
 class Rectangle < GraphQL::Schema::Object
-  decorator_metadata do |object|
+  decorator_metadata do |object, _graphql_context|
     {
       name: object.name
     }
   end
 end
 ```
-`RectangleDecorator` will be initialized with a metadata of `{ name: <object_name> }`.
-`decorator_metadata` also optionally yields the current GraphQL `context`.
-```ruby
-class Rectangle < GraphQL::Schema::Object
-  decorator_metadata do |object, context|
-    # Do something with context
-  end
-end
-```
+`RectangleDecorator` will be initialized with a metadata of `{ name: <object_name>, graphql: 
+true }`.
 
 #### scoped_decorator_metadata
 `scoped_decorator_metadata` functions similarly to `decorator_metadata`. Each decorated type with 
@@ -138,7 +130,7 @@ replace anything given from above and propagate the new metadata. This is useful
 that might depend on state from a field far above them.
 ```ruby
 class Rectangle < GraphQL::Schema::Object
-  scoped_decorator_metadata do |object|
+  scoped_decorator_metadata do |object, _graphql_context|
     {
       name: object.name
     }
@@ -149,20 +141,11 @@ end
 ```
 `RectangleDecorator` will be initialized with a metadata of `{ name: <object_name> }`. 
 The decorator of `DetailedProperties` will also be initialized with a metadata 
-of `{ name: <object_name> }`. `scoped_decorator_metadata` also optionally yields the current GraphQL 
-`context`.
-
-```ruby
-class Rectangle < GraphQL::Schema::Object
-  scoped_decorator_metadata do |object, context|
-    # Do something with context
-  end
-end
-```
+of `{ name: <object_name>, graphql: true }`.
 
 #### Combinations
-You can mix and match these methods to suit your needs. Note that if `decorate_with` and 
-`decorate_when` are both provided that `decorate_with` will take precedence.
+You can mix and match these methods to suit your needs. Note that if `decorator_metadata` and 
+`scoped_decorator_metadata` are both provided that `scoped_decorator_metadata` will take precedence.
 ```ruby
 class Rectangle < GraphQL::Schema::Object
   decorate_with RectangleDecorator
@@ -187,8 +170,11 @@ end
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to 
+run the tests. You can also run `bin/console` for an interactive prompt that will allow you to 
+experiment.
 
 ## License
 
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+The gem is available as open source under the terms of the 
+[MIT License](https://opensource.org/licenses/MIT).

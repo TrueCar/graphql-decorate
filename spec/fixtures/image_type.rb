@@ -2,7 +2,7 @@
 
 class ImageType < BaseObject
   implements Icon
-  decorate_when do |image|
+  decorate_with do |image|
     image[:url] == 'placeholder' ? PlaceHolderImageDecorator : ImageDecorator
   end
 

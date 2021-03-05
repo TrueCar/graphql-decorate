@@ -6,14 +6,8 @@ module GraphQL
     module ObjectIntegration
       # Decorate the type with a decorator class.
       # @param klass [Class] Class the object should be decorated with.
-      def decorate_with(klass)
+      def decorate_with(klass = nil, &block)
         @decorator_class = klass
-      end
-
-      # Dynamically choose the decorator class based on the underlying object.
-      # @yield [object] Gives the underlying object to the block.
-      # @return [Proc] Proc to evaluate decorator class. Proc should return a decorator class.
-      def decorate_when(&block)
         @decorator_evaluator = block
       end
 
