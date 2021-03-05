@@ -16,7 +16,7 @@ jobs:
           ruby-version: 2.6.x
       - name: Check documentation completion
         run: |
-          completion_percentage=$(bundle exec yard | tee /dev/stdout  | tail -1 | cut -d'%' -f1 | bc)
+          completion_percentage=$(bundle exec yard | tee /dev/stdout  | tail -1 | cut -d'%' -f1 | xargs)
           echo $completion_percentage
           if [[ $completion_percentage != "100.00" ]]; then
             echo "YARD documentation must be at 100%"
