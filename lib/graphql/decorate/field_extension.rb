@@ -15,12 +15,12 @@ module GraphQL
           GraphQL::Decorate::ConnectionWrapper.wrap(value, context, options)
         elsif collection_classes.any? { |c| value.is_a?(c) }
           value.map do |item|
-            unresolved_field = GraphQL::Decorate::UndecoratedField.new(item, object.object, object.class, context, options)
-            GraphQL::Decorate::Decoration.decorate(unresolved_field)
+            undecorated_field = GraphQL::Decorate::UndecoratedField.new(item, object.object, object.class, context, options)
+            GraphQL::Decorate::Decoration.decorate(undecorated_field)
           end
         else
-          unresolved_field = GraphQL::Decorate::UndecoratedField.new(value, object.object, object.class, context, options)
-          GraphQL::Decorate::Decoration.decorate(unresolved_field)
+          undecorated_field = GraphQL::Decorate::UndecoratedField.new(value, object.object, object.class, context, options)
+          GraphQL::Decorate::Decoration.decorate(undecorated_field)
         end
       end
 
