@@ -11,8 +11,6 @@ module GraphQL
         @default_decorator_context = { graphql: true }
       end
 
-      # Resolve the object with decoration.
-      # @return [Object] Decorated object if possible, otherwise the original object.
       def decorate
         if decorator_class
           GraphQL::Decorate.configuration.evaluate_decorator.call(decorator_class, object, decorator_context)
