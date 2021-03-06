@@ -26,7 +26,7 @@ jobs:
       run: bundle exec rake
 
     - name: Run RuboCop
-    - run: bundle exec rubocop
+      run: bundle exec rubocop
 
     - name: Upload coverage results
       uses: actions/upload-artifact@master
