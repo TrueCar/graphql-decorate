@@ -9,5 +9,9 @@ module ActiveRecord
     def map(&block)
       @collection.map(&block)
     end
+
+    def first
+      @collection.first
+    end
   end
 end

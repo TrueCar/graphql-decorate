@@ -23,15 +23,11 @@ module GraphQL
 
       # @return [Class] Decorator class for the current field
       def decorator_class
-        if options[:decorator_class]
-          options[:decorator_class]
-        elsif options[:decorator_evaluator]
-          options[:decorator_evaluator].call(value, graphql_context)
-        elsif resolve_decorator_class
-          resolve_decorator_class
-        elsif resolve_decorator_evaluator
-          resolve_decorator_evaluator.call(value, graphql_context)
-        end
+        resolved_class = options[:decorator_class] || resolve_decorator_class
+        return resolved_class if resolved_class
+
+        class_evaluator = options[:decorator_evaluator] || resolve_decorator_evaluator
+        class_evaluator&.call(value, graphql_context)
       end
 
       # @return [Hash] Metadata to be provided to a decorator for the current field
@@ -48,14 +44,22 @@ module GraphQL
       end
 
       def scoped_metadata
-        new_scoped_metadata = {}.merge(
-          parent_type_attributes.scoped_metadata_evaluator ? parent_type_attributes.scoped_metadata_evaluator.call(parent_value, graphql_context) : {},
-          scoped_metadata_evaluator ? scoped_metadata_evaluator.call(value, graphql_context) : {}
-        )
-        existing_scoped_metadata = graphql_context[:scoped_decorator_metadata] || {}
         merged_scoped_metadata = existing_scoped_metadata.merge(new_scoped_metadata)
         graphql_context.scoped_set!(:scoped_decorator_metadata, merged_scoped_metadata)
         merged_scoped_metadata
+      end
+
+      def new_scoped_metadata
+        scoped_metadata = scoped_metadata_evaluator&.call(value, graphql_context) || {}
+        parent_scoped_metadata.merge(scoped_metadata)
+      end
+
+      def parent_scoped_metadata
+        parent_type_attributes.scoped_metadata_evaluator&.call(parent_value, graphql_context) || {}
+      end
+
+      def existing_scoped_metadata
+        graphql_context[:scoped_decorator_metadata] || {}
       end
 
       def metadata_evaluator
@@ -67,19 +71,25 @@ module GraphQL
       end
 
       def resolve_decorator_class
-        @resolve_decorator_class ||= resolved_type.respond_to?(:decorator_class) && resolved_type.decorator_class
+        @resolve_decorator_class ||= resolved_type.respond_to?(:decorator_class) ? resolved_type.decorator_class : nil
       end
 
       def resolve_decorator_evaluator
-        @resolve_decorator_evaluator ||= resolved_type.respond_to?(:decorator_evaluator) && resolved_type.decorator_evaluator
+        @resolve_decorator_evaluator ||= begin
+          resolved_type.respond_to?(:decorator_evaluator) ? resolved_type.decorator_evaluator : nil
+        end
       end
 
       def resolve_metadata_evaluator
-        @resolve_metadata_evaluator ||= resolved_type.respond_to?(:metadata_evaluator) && resolved_type.metadata_evaluator
+        @resolve_metadata_evaluator ||= begin
+          resolved_type.respond_to?(:metadata_evaluator) ? resolved_type.metadata_evaluator : nil
+        end
       end
 
       def resolve_scoped_metadata_evaluator
-        @resolve_scoped_metadata_evaluator ||= resolved_type.respond_to?(:scoped_metadata_evaluator) && resolved_type.scoped_metadata_evaluator
+        @resolve_scoped_metadata_evaluator ||= begin
+          resolved_type.respond_to?(:scoped_metadata_evaluator) ? resolved_type.scoped_metadata_evaluator : nil
+        end
       end
 
       def resolved_type

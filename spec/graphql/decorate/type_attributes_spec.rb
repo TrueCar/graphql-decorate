@@ -3,75 +3,185 @@
 require 'spec_helper'
 
 describe GraphQL::Decorate::TypeAttributes do
-  subject { described_class.new(type) }
+  subject(:type_attributes) { described_class.new(type) }
 
-  context 'given a scalar type' do
+  context 'when given a scalar type' do
     let(:type) { String }
 
-    it 'returns nil or false to all queries except resolved_type?' do
-      expect(subject.decorator_class).to eq(nil)
-      expect(subject.decorator_evaluator).to eq(nil)
-      expect(subject.metadata_evaluator).to eq(nil)
-      expect(subject.unresolved_type).to eq(nil)
-      expect(subject.unresolved_type?).to be_falsey
-      expect(subject.resolved_type?).to be_truthy
-      expect(subject.connection?).to be_falsey
+    it 'has no decorator class' do
+      expect(type_attributes.decorator_class).to be_nil
+    end
+
+    it 'has no decorator evaluator' do
+      expect(type_attributes.decorator_evaluator).to be_nil
+    end
+
+    it 'has no metadata evaluator' do
+      expect(type_attributes.metadata_evaluator).to be_nil
+    end
+
+    it 'has no scoped metadata evaluator' do
+      expect(type_attributes.scoped_metadata_evaluator).to be_nil
+    end
+
+    it 'has no unresolved type' do
+      expect(type_attributes.unresolved_type).to be_nil
+    end
+
+    it 'is not a resolved type' do
+      expect(type_attributes).not_to be_unresolved_type
+    end
+
+    it 'is a resolved type' do
+      expect(type_attributes).to be_resolved_type
+    end
+
+    it 'is not a connection' do
+      expect(type_attributes).not_to be_connection
     end
   end
 
-  context 'given an undecorated type' do
+  context 'when given an undecorated type' do
     let(:type) { BaseObject }
 
-    it 'returns nil or false to all queries except resolved_type?' do
-      expect(subject.decorator_class).to eq(nil)
-      expect(subject.decorator_evaluator).to eq(nil)
-      expect(subject.metadata_evaluator).to eq(nil)
-      expect(subject.unresolved_type).to eq(nil)
-      expect(subject.unresolved_type?).to be_falsey
-      expect(subject.resolved_type?).to be_truthy
-      expect(subject.connection?).to be_falsey
+    it 'has no decorator class' do
+      expect(type_attributes.decorator_class).to be_nil
+    end
+
+    it 'has no decorator evaluator' do
+      expect(type_attributes.decorator_evaluator).to be_nil
+    end
+
+    it 'has no metadata evaluator' do
+      expect(type_attributes.metadata_evaluator).to be_nil
+    end
+
+    it 'has no scoped metadata evaluator' do
+      expect(type_attributes.scoped_metadata_evaluator).to be_nil
+    end
+
+    it 'has no unresolved type' do
+      expect(type_attributes.unresolved_type).to be_nil
+    end
+
+    it 'is not a resolved type' do
+      expect(type_attributes).not_to be_unresolved_type
+    end
+
+    it 'is a resolved type' do
+      expect(type_attributes).to be_resolved_type
+    end
+
+    it 'is not a connection' do
+      expect(type_attributes).not_to be_connection
     end
   end
 
-  context 'given a decorated type' do
+  context 'when given a decorated type' do
     let(:type) { PostType }
 
-    it 'returns as a resolved type with the attributes on the type class' do
-      expect(subject.decorator_class).to eq(PostType.decorator_class)
-      expect(subject.decorator_evaluator).to eq(PostType.decorator_evaluator)
-      expect(subject.metadata_evaluator).to eq(PostType.metadata_evaluator)
-      expect(subject.unresolved_type).to eq(nil)
-      expect(subject.unresolved_type?).to be_falsey
-      expect(subject.resolved_type?).to be_truthy
-      expect(subject.connection?).to be_falsey
+    it 'has no decorator class' do
+      expect(type_attributes.decorator_class).to eq(PostType.decorator_class)
+    end
+
+    it 'has no decorator evaluator' do
+      expect(type_attributes.decorator_evaluator).to eq(PostType.decorator_evaluator)
+    end
+
+    it 'has no metadata evaluator' do
+      expect(type_attributes.metadata_evaluator).to eq(PostType.metadata_evaluator)
+    end
+
+    it 'has no scoped metadata evaluator' do
+      expect(type_attributes.scoped_metadata_evaluator).to eq(PostType.scoped_metadata_evaluator)
+    end
+
+    it 'has no unresolved type' do
+      expect(type_attributes.unresolved_type).to be_nil
+    end
+
+    it 'is not a resolved type' do
+      expect(type_attributes).not_to be_unresolved_type
+    end
+
+    it 'is a resolved type' do
+      expect(type_attributes).to be_resolved_type
+    end
+
+    it 'is not a connection' do
+      expect(type_attributes).not_to be_connection
     end
   end
 
-  context 'given a connection type' do
+  context 'when given a connection type' do
     let(:type) { PostType.connection_type }
 
-    it 'returns as a resolved connection type with the attributes on the node type class' do
-      expect(subject.decorator_class).to eq(PostType.decorator_class)
-      expect(subject.decorator_evaluator).to eq(PostType.decorator_evaluator)
-      expect(subject.metadata_evaluator).to eq(PostType.metadata_evaluator)
-      expect(subject.unresolved_type).to eq(nil)
-      expect(subject.unresolved_type?).to be_falsey
-      expect(subject.resolved_type?).to be_truthy
-      expect(subject.connection?).to be_truthy
+    it 'has no decorator class' do
+      expect(type_attributes.decorator_class).to eq(PostType.decorator_class)
+    end
+
+    it 'has no decorator evaluator' do
+      expect(type_attributes.decorator_evaluator).to eq(PostType.decorator_evaluator)
+    end
+
+    it 'has no metadata evaluator' do
+      expect(type_attributes.metadata_evaluator).to eq(PostType.metadata_evaluator)
+    end
+
+    it 'has no scoped metadata evaluator' do
+      expect(type_attributes.scoped_metadata_evaluator).to eq(PostType.scoped_metadata_evaluator)
+    end
+
+    it 'has no unresolved type' do
+      expect(type_attributes.unresolved_type).to be_nil
+    end
+
+    it 'is not a resolved type' do
+      expect(type_attributes).not_to be_unresolved_type
+    end
+
+    it 'is a resolved type' do
+      expect(type_attributes).to be_resolved_type
+    end
+
+    it 'is not a connection' do
+      expect(type_attributes).to be_connection
     end
   end
 
-  context 'given an unresolved type' do
+  context 'when given an unresolved type' do
     let(:type) { Icon }
 
-    it 'returns as an unresolved type with no attributes' do
-      expect(subject.decorator_class).to eq(nil)
-      expect(subject.decorator_evaluator).to eq(nil)
-      expect(subject.metadata_evaluator).to eq(nil)
-      expect(subject.unresolved_type).to eq(Icon)
-      expect(subject.unresolved_type?).to be_truthy
-      expect(subject.resolved_type?).to be_falsey
-      expect(subject.connection?).to be_falsey
+    it 'has no decorator class' do
+      expect(type_attributes.decorator_class).to be_nil
+    end
+
+    it 'has no decorator evaluator' do
+      expect(type_attributes.decorator_evaluator).to be_nil
+    end
+
+    it 'has no metadata evaluator' do
+      expect(type_attributes.metadata_evaluator).to be_nil
+    end
+
+    it 'has no scoped metadata evaluator' do
+      expect(type_attributes.scoped_metadata_evaluator).to be_nil
+    end
+
+    it 'has no unresolved type' do
+      expect(type_attributes.unresolved_type).to eq(Icon)
+    end
+
+    it 'is not a resolved type' do
+      expect(type_attributes).to be_unresolved_type
+    end
+
+    it 'is a resolved type' do
+      expect(type_attributes).not_to be_resolved_type
+    end
+
+    it 'is not a connection' do
+      expect(type_attributes).not_to be_connection
     end
   end
 end

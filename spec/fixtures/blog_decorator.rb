@@ -6,7 +6,7 @@ class BlogDecorator < Decorator
   end
 
   def title
-    object[:name].downcase.split(' ').join('-')
+    object[:name].downcase.split.join('-')
   end
 
   def active_status
