@@ -34,7 +34,8 @@ module GraphQL
       def nodes
         nodes = @connection.nodes
         nodes.map do |node|
-          unresolved_field = GraphQL::Decorate::UndecoratedField.new(node, connection.parent, connection.field.owner, context, options)
+          unresolved_field = GraphQL::Decorate::UndecoratedField.new(node, connection.parent, connection.field.owner,
+                                                                     context, options)
           GraphQL::Decorate::Decoration.decorate(unresolved_field)
         end
       end

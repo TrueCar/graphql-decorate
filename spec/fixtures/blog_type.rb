@@ -22,7 +22,8 @@ class BlogType < BaseObject
   field :post_connection, PostType.connection_type, null: false
 
   def posts
-    [{ first_name: 'Bob', last_name: 'Boberson', published: true }, { first_name: 'Tod', last_name: 'Toderson', published: false }]
+    [{ first_name: 'Bob', last_name: 'Boberson', published: true },
+     { first_name: 'Tod', last_name: 'Toderson', published: false }]
   end
 
   def post_connection

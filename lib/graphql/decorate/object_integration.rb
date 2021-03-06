@@ -18,7 +18,8 @@ module GraphQL
         @metadata_evaluator = block
       end
 
-      # Pass additional data to the decorator context (if supported). All child fields will also receive the same context.
+      # Pass additional data to the decorator context (if supported).
+      # All child fields will also receive the same context.
       # @yield [object] Gives the underlying object to the block.
       # @return [Proc] Proc to evaluate decorator context. Proc should return Hash.
       def scoped_decorator_metadata(&block)
