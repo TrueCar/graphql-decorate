@@ -15,15 +15,30 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: true
+
     - name: Run tests
       run: bundle exec rake
+
+    - name: Run RuboCop
+    - run: bundle exec rubocop
+
     - name: Upload coverage results
       uses: actions/upload-artifact@master
       with:
         name: coverage-report
         path: coverage
+
+    - name: Check documentation completion
+      run: |
+        completion_percentage=$(bundle exec yard | tee /dev/stdout  | tail -1 | cut -d'%' -f1 | xargs)
+        echo $completion_percentage
+        if [[ $completion_percentage != "100.00" ]]; then
+          echo "YARD documentation must be at 100%"
+          exit 2;
+        fi
