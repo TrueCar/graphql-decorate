@@ -16,12 +16,8 @@ describe GraphQL::Decorate::TypeAttributes do
       expect(type_attributes.decorator_evaluator).to be_nil
     end
 
-    it 'has no metadata evaluator' do
-      expect(type_attributes.metadata_evaluator).to be_nil
-    end
-
-    it 'has no scoped metadata evaluator' do
-      expect(type_attributes.scoped_metadata_evaluator).to be_nil
+    it 'has no metadata' do
+      expect(type_attributes.decorator_metadata).to be_nil
     end
 
     it 'has no unresolved type' do
@@ -52,12 +48,8 @@ describe GraphQL::Decorate::TypeAttributes do
       expect(type_attributes.decorator_evaluator).to be_nil
     end
 
-    it 'has no metadata evaluator' do
-      expect(type_attributes.metadata_evaluator).to be_nil
-    end
-
-    it 'has no scoped metadata evaluator' do
-      expect(type_attributes.scoped_metadata_evaluator).to be_nil
+    it 'has no metadata' do
+      expect(type_attributes.decorator_metadata).to be_nil
     end
 
     it 'has no unresolved type' do
@@ -80,20 +72,16 @@ describe GraphQL::Decorate::TypeAttributes do
   context 'when given a decorated type' do
     let(:type) { PostType }
 
-    it 'has no decorator class' do
+    it 'has a decorator class' do
       expect(type_attributes.decorator_class).to eq(PostType.decorator_class)
     end
 
-    it 'has no decorator evaluator' do
+    it 'has a decorator evaluator' do
       expect(type_attributes.decorator_evaluator).to eq(PostType.decorator_evaluator)
     end
 
-    it 'has no metadata evaluator' do
-      expect(type_attributes.metadata_evaluator).to eq(PostType.metadata_evaluator)
-    end
-
-    it 'has no scoped metadata evaluator' do
-      expect(type_attributes.scoped_metadata_evaluator).to eq(PostType.scoped_metadata_evaluator)
+    it 'has metadata' do
+      expect(type_attributes.decorator_metadata).to eq(PostType.decorator_metadata)
     end
 
     it 'has no unresolved type' do
@@ -116,20 +104,16 @@ describe GraphQL::Decorate::TypeAttributes do
   context 'when given a connection type' do
     let(:type) { PostType.connection_type }
 
-    it 'has no decorator class' do
+    it 'has a decorator class' do
       expect(type_attributes.decorator_class).to eq(PostType.decorator_class)
     end
 
-    it 'has no decorator evaluator' do
+    it 'has a decorator evaluator' do
       expect(type_attributes.decorator_evaluator).to eq(PostType.decorator_evaluator)
     end
 
-    it 'has no metadata evaluator' do
-      expect(type_attributes.metadata_evaluator).to eq(PostType.metadata_evaluator)
-    end
-
-    it 'has no scoped metadata evaluator' do
-      expect(type_attributes.scoped_metadata_evaluator).to eq(PostType.scoped_metadata_evaluator)
+    it 'has metadata' do
+      expect(type_attributes.decorator_metadata).to eq(PostType.decorator_metadata)
     end
 
     it 'has no unresolved type' do
@@ -160,12 +144,8 @@ describe GraphQL::Decorate::TypeAttributes do
       expect(type_attributes.decorator_evaluator).to be_nil
     end
 
-    it 'has no metadata evaluator' do
-      expect(type_attributes.metadata_evaluator).to be_nil
-    end
-
-    it 'has no scoped metadata evaluator' do
-      expect(type_attributes.scoped_metadata_evaluator).to be_nil
+    it 'has no metadata' do
+      expect(type_attributes.decorator_metadata).to be_nil
     end
 
     it 'has no unresolved type' do

@@ -123,15 +123,15 @@ describe GraphQL::Decorate::FieldExtension do
       it_behaves_like 'undecorated value'
     end
 
-    it 'adds graphql to the decorator context' do
+    it 'adds graphql to the decorator metadata' do
       expect(field_extension.context).to include(graphql: true)
     end
 
-    context 'when a decorator context evaluator is provided' do
-      let(:options) { { decorator_class: PostDecorator, metadata_evaluator: PostType.metadata_evaluator } }
+    context 'when a decorator metadata evaluator is provided' do
+      let(:options) { { decorator_class: PostDecorator, decorator_metadata: PostType.decorator_metadata } }
 
-      it 'populates decorator context using the evaluated data' do
-        custom_context = options[:metadata_evaluator].call(value, {})
+      it 'populates decorator metadata using the evaluated data' do
+        custom_context = options[:decorator_metadata].unscoped_proc.call(value, {})
         expect(field_extension.context).to include({ graphql: true }.merge(custom_context))
       end
     end
@@ -225,11 +225,13 @@ describe GraphQL::Decorate::FieldExtension do
       it_behaves_like 'undecorated array'
     end
 
-    context 'when a decorator context evaluator is provided' do
-      let(:options) { { decorator_class: PostDecorator, metadata_evaluator: PostType.metadata_evaluator } }
+    context 'when decorator metadata is provided' do
+      let(:options) do
+        { decorator_class: PostDecorator, decorator_metadata: PostType.decorator_metadata }
+      end
 
-      it 'populates decorator context using the evaluated data' do
-        custom_context = options[:metadata_evaluator].call(value.first, {})
+      it 'populates decorator metadata using the evaluated data' do
+        custom_context = options[:decorator_metadata].unscoped_proc.call(value.first, {})
         expect(field_extension.first.context).to include({ graphql: true }.merge(custom_context))
       end
     end

@@ -23,8 +23,7 @@ module GraphQL
         {
           decorator_class: type_attributes.decorator_class,
           decorator_evaluator: type_attributes.decorator_evaluator,
-          metadata_evaluator: type_attributes.metadata_evaluator,
-          scoped_metadata_evaluator: type_attributes.scoped_metadata_evaluator,
+          decorator_metadata: type_attributes.decorator_metadata,
           unresolved_type: type_attributes.unresolved_type
         }
       end

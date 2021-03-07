@@ -6,11 +6,13 @@ describe GraphQL::Decorate::ObjectIntegration do
   let(:type) do
     Class.new(BaseObject) do
       decorate_with Decorator
-      decorator_metadata do |object|
-        object.is_a?(Hash) ? 'hash context' : 'string context'
-      end
-      scoped_decorator_metadata do |object|
-        object.is_a?(Hash) ? 'hash context' : 'string context'
+      decorate_metadata do |metadata|
+        metadata.unscoped do |object|
+          object.is_a?(Hash) ? 'hash context' : 'string context'
+        end
+        metadata.scoped do |object|
+          object.is_a?(Hash) ? 'hash context' : 'string context'
+        end
       end
     end
   end
@@ -33,11 +35,11 @@ describe GraphQL::Decorate::ObjectIntegration do
     end
   end
 
-  it 'sets a decorator context evaluator on the type class' do
-    expect(type.metadata_evaluator.call({})).to eq('hash context')
+  it 'sets a decorator metadata proc on the type class' do
+    expect(type.decorator_metadata.unscoped_proc.call({})).to eq('hash context')
   end
 
-  it 'sets a scoped decorator context evaluator on the type class' do
-    expect(type.metadata_evaluator.call('foo')).to eq('string context')
+  it 'sets a scoped decorator metadata proc on the type class' do
+    expect(type.decorator_metadata.scoped_proc.call('foo')).to eq('string context')
   end
 end

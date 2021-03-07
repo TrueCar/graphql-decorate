@@ -40,7 +40,7 @@ module GraphQL
       attr_reader :options, :graphql_context, :parent_value, :default_metadata, :parent_type_attributes
 
       def unscoped_metadata
-        metadata_evaluator ? metadata_evaluator.call(value, graphql_context) : {}
+        unscoped_metadata_proc&.call(value, graphql_context) || {}
       end
 
       def scoped_metadata
@@ -50,24 +50,24 @@ module GraphQL
       end
 
       def new_scoped_metadata
-        scoped_metadata = scoped_metadata_evaluator&.call(value, graphql_context) || {}
+        scoped_metadata = scoped_metadata_proc&.call(value, graphql_context) || {}
         parent_scoped_metadata.merge(scoped_metadata)
       end
 
       def parent_scoped_metadata
-        parent_type_attributes.scoped_metadata_evaluator&.call(parent_value, graphql_context) || {}
+        parent_type_attributes.decorator_metadata&.scoped_proc&.call(parent_value, graphql_context) || {}
       end
 
       def existing_scoped_metadata
         graphql_context[:scoped_decorator_metadata] || {}
       end
 
-      def metadata_evaluator
-        @metadata_evaluator ||= options[:metadata_evaluator] || resolve_metadata_evaluator
+      def unscoped_metadata_proc
+        @unscoped_metadata_proc ||= options[:decorator_metadata]&.unscoped_proc || resolve_unscoped_proc
       end
 
-      def scoped_metadata_evaluator
-        @scoped_metadata_evaluator ||= options[:scoped_metadata_evaluator] || resolve_scoped_metadata_evaluator
+      def scoped_metadata_proc
+        @scoped_metadata_proc ||= options[:decorator_metadata]&.scoped_proc || resolve_scoped_proc
       end
 
       def resolve_decorator_class
@@ -80,15 +80,15 @@ module GraphQL
         end
       end
 
-      def resolve_metadata_evaluator
-        @resolve_metadata_evaluator ||= begin
-          resolved_type.respond_to?(:metadata_evaluator) ? resolved_type.metadata_evaluator : nil
+      def resolve_unscoped_proc
+        @resolve_unscoped_proc ||= begin
+          resolved_type.respond_to?(:decorator_metadata) ? resolved_type.decorator_metadata&.unscoped_proc : nil
         end
       end
 
-      def resolve_scoped_metadata_evaluator
-        @resolve_scoped_metadata_evaluator ||= begin
-          resolved_type.respond_to?(:scoped_metadata_evaluator) ? resolved_type.scoped_metadata_evaluator : nil
+      def resolve_scoped_proc
+        @resolve_scoped_proc ||= begin
+          resolved_type.respond_to?(:decorator_metadata) ? resolved_type.decorator_metadata&.scoped_proc : nil
         end
       end
 

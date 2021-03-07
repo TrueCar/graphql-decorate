@@ -28,13 +28,8 @@ module GraphQL
       end
 
       # @return [Proc, nil] Decorator metadata evaluator for the type if available
-      def metadata_evaluator
-        get_attribute(:metadata_evaluator)
-      end
-
-      # @return [Proc, nil] Scoped decorator metadata evaluator for the type if available
-      def scoped_metadata_evaluator
-        get_attribute(:scoped_metadata_evaluator)
+      def decorator_metadata
+        get_attribute(:decorator_metadata)
       end
 
       # @return [GraphQL::Schema::Object, nil] Decorator evaluator for the type if available

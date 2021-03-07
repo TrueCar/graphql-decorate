@@ -2,16 +2,18 @@
 
 class PostType < BaseObject
   decorate_with PostDecorator
-  decorator_metadata do |post|
-    {
-      published_status: post[:published]
-    }
-  end
+  decorate_metadata do |metadata|
+    metadata.unscoped do |post|
+      {
+        published_status: post[:published]
+      }
+    end
 
-  scoped_decorator_metadata do |post|
-    {
-      post_owner: post[:first_name]
-    }
+    metadata.scoped do |post|
+      {
+        post_owner: post[:first_name]
+      }
+    end
   end
 
   field :owner, String, method: :post_owner, null: false

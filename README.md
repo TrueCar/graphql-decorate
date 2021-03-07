@@ -76,10 +76,10 @@ end
 ```
 
 ### Types
-Three methods are made available on your type classes: `decorate_with`, `decorator_metadata`, 
-and `scoped_decorator_metadata`. Every method that yields the underlying object will also yield 
-the current GraphQL `context`. If decoration depends on some context in the current query then 
-you can access it when the field is resolved.
+Two methods are made available on your type classes: `decorate_with` and `decorate_metadata`. 
+Every method that yields the underlying object will also yield the current GraphQL `context`. 
+If decoration depends on some context in the current query then you can access it when the field  
+is resolved.
 
 #### decorate_with
 `decorate_with` accepts a decorator class that will decorate every instance of your type.
@@ -103,56 +103,50 @@ class Rectangle < GraphQL::Schema::Object
 end
 ```
 
-#### decorator_metadata
-`decorator_metadata` accepts a block which yields the underlying object. If your decorator pattern 
-allows additional metadata to be passed into the decorators, you can define it here. By default 
- every metadata hash will also contain `{ graphql: true }`. This is useful if your decorator 
-logic needs to diverge when used in a GraphQL context. Ideally this metadata shouldn't be used 
-and your decorators are agnostic to where they are being used, but it is available if needed.
-```ruby
-class Rectangle < GraphQL::Schema::Object
-  decorator_metadata do |object, _graphql_context|
-    {
-      name: object.name
-    }
-  end
-end
-```
-`RectangleDecorator` will be initialized with a metadata of `{ name: <object_name>, graphql: 
-true }`.
+#### decorate_metadata
+If your decorator pattern allows additional metadata to be passed into the decorators, you can 
+define it here. By default every metadata hash will contain `{ graphql: true }`. This is 
+useful if your decorator logic needs to diverge when used in a GraphQL context. Ideally your 
+decorators are agnostic to where they are being used, but it is available if needed.
 
-#### scoped_decorator_metadata
-`scoped_decorator_metadata` functions similarly to `decorator_metadata`. Each decorated type with 
-the `scoped_decorator_metadata` block defined will apply additional metadata to the decorator. The 
-difference is that _every child field_ of the type will also receive the same metadata from 
-further up in the tree. If a child field redefines the `scoped_decorator_metadata` then it will 
-replace anything given from above and propagate the new metadata. This is useful for decorators 
-that might depend on state from a field far above them.
+`decorate_metadata` yields a `GraphQL::Decorate::Metadata` metadata instance. It responds to two 
+methods: `unscoped` and `scoped`. `unscoped` sets metadata for a resolved field. `scoped` sets 
+metadata for a resolved field and all of its child fields. `unscoped` and `scoped` are expected 
+to return `Hash`s.
+
 ```ruby
 class Rectangle < GraphQL::Schema::Object
-  scoped_decorator_metadata do |object, _graphql_context|
-    {
-      name: object.name
-    }
+  decorate_metadata do |metadata| 
+   metadata.unscoped do |object, _graphql_context| 
+     { 
+       name: object.name
+     }
+   end
+   
+   metadata.scoped do |object, _graphql_context|
+     {
+       inside_rectangle: true
+     }
+   end
   end
-  
-  field :detailed_properties, DetailedProperties, null: false
 end
 ```
-`RectangleDecorator` will be initialized with a metadata of `{ name: <object_name> }`. 
-The decorator of `DetailedProperties` will also be initialized with a metadata 
-of `{ name: <object_name>, graphql: true }`.
+`RectangleDecorator` will be initialized with metadata `{ name: <object_name>,
+inside_rectangle: true, graphql: true }`. All child fields of `Rectangle` will be initialized 
+with metadata `{ inside_rectangle: true, graphql: true }`.
 
 #### Combinations
-You can mix and match these methods to suit your needs. Note that if `decorator_metadata` and 
-`scoped_decorator_metadata` are both provided that `scoped_decorator_metadata` will take precedence.
+You can mix and match these methods to suit your needs. Note that if `unscoped` and 
+`scoped` are both provided for metadata that `scoped` will override any shared keys.
 ```ruby
 class Rectangle < GraphQL::Schema::Object
   decorate_with RectangleDecorator
-  decorator_metadata do |object|
-    {
-      name: object.name
-    }
+  decorate_metadata do |metadata|
+   metadata.scoped do |object, _graphql_context|
+      {
+        name: object.name
+      } 
+    end
   end
 end
 ```

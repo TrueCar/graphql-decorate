@@ -2,10 +2,12 @@
 
 class ReactionType < BaseObject
   decorate_with ReactionDecorator
-  scoped_decorator_metadata do |_|
-    {
-      post_owner: 'Rod'
-    }
+  decorate_metadata do |metadata|
+    metadata.scoped do |_reaction|
+      {
+        post_owner: 'Rod'
+      }
+    end
   end
 
   field :post_owner, String, null: true
