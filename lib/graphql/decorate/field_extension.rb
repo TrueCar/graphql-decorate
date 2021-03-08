@@ -7,7 +7,7 @@ module GraphQL
       # Extension to be called after lazy loading.
       # @param context [GraphQL::Query::Context] The current GraphQL query context.
       # @param value [Object, GraphQL::Schema::Object, GraphQL::Pagination::Connection] The object being decorated. Can
-      # be a schema object if the field hasn't been resolved yet or a connection.
+      #   be a schema object if the field hasn't been resolved yet or a connection.
       # @return [Object, GraphQL::Decorate::ConnectionWrapper] Decorated object.
       def after_resolve(context:, value:, object:, **_rest)
         return if value.nil?
