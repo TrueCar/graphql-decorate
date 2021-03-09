@@ -1,6 +1,6 @@
 # GraphQL Decorate
 
-`graphql-decorate` adds an easy-to-use interface for decorating types in `graphql-ruby`. It lets 
+`graphql-decorate` adds an easy-to-use interface for decorating types in [`graphql-ruby`](https://github.com/rmosolgo/graphql-ruby). It lets 
 you move logic out of your type files and keep them declarative. 
 
 ## Installation
@@ -59,7 +59,7 @@ In this example, the `Rectangle` type is being decorated with a `RectangleDecora
 `RectangleDecorator`. All of the methods on the decorator are accessible on the type.
 
 ### Decorators
-By default, `graphql-decorate` is set up to work with Draper-style decorators. These decorators 
+By default, `graphql-decorate` is set up to work with [`draper`](https://github.com/drapergem/draper) style decorators. These decorators 
 provide a `decorate` method that wraps the original object and returns an instance of the 
 decorator. They can also take in additional metadata.
 ```ruby
