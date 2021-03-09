@@ -9,13 +9,13 @@ module GraphQL
 
       # @param value [Object] Value to be decorated
       # @param parent_value [Object] Value of the parent field
-      # @param parent_field_type [GraphQL::Schema::Object] Type class of the parent field
+      # @param parent_type [GraphQL::Schema::Object] Type class of the parent field
       # @param graphql_context [GraphQL::Query::Context] Current query graphql_context
       # @param options [Hash] Options provided to the field extension
-      def initialize(value, parent_value, parent_field_type, graphql_context, options)
+      def initialize(value, parent_value, parent_type, graphql_context, options)
         @value = value
         @parent_value = parent_value
-        @parent_type_attributes = GraphQL::Decorate::TypeAttributes.new(parent_field_type)
+        @parent_type = parent_type
         @graphql_context = graphql_context
         @options = options
         @default_metadata = { graphql: true }
@@ -37,7 +37,7 @@ module GraphQL
 
       private
 
-      attr_reader :options, :graphql_context, :parent_value, :default_metadata, :parent_type_attributes
+      attr_reader :options, :graphql_context, :parent_value, :parent_type, :default_metadata
 
       def unscoped_metadata
         unscoped_metadata_proc&.call(value, graphql_context) || {}
@@ -58,42 +58,42 @@ module GraphQL
         parent_type_attributes.decorator_metadata&.scoped_proc&.call(parent_value, graphql_context) || {}
       end
 
+      def parent_type_attributes
+        GraphQL::Decorate::TypeAttributes.new(parent_type)
+      end
+
       def existing_scoped_metadata
         graphql_context[:scoped_decorator_metadata] || {}
       end
 
       def unscoped_metadata_proc
-        @unscoped_metadata_proc ||= options[:decorator_metadata]&.unscoped_proc || resolve_unscoped_proc
+        options[:decorator_metadata]&.unscoped_proc || resolve_unscoped_proc
       end
 
       def scoped_metadata_proc
-        @scoped_metadata_proc ||= options[:decorator_metadata]&.scoped_proc || resolve_scoped_proc
+        options[:decorator_metadata]&.scoped_proc || resolve_scoped_proc
       end
 
       def resolve_decorator_class
-        @resolve_decorator_class ||= resolved_type.respond_to?(:decorator_class) ? resolved_type.decorator_class : nil
+        resolved_type_attributes.decorator_class
       end
 
       def resolve_decorator_evaluator
-        @resolve_decorator_evaluator ||= begin
-          resolved_type.respond_to?(:decorator_evaluator) ? resolved_type.decorator_evaluator : nil
-        end
+        resolved_type_attributes.decorator_evaluator
       end
 
       def resolve_unscoped_proc
-        @resolve_unscoped_proc ||= begin
-          resolved_type.respond_to?(:decorator_metadata) ? resolved_type.decorator_metadata&.unscoped_proc : nil
-        end
+        resolved_type_attributes.decorator_metadata&.unscoped_proc
       end
 
       def resolve_scoped_proc
-        @resolve_scoped_proc ||= begin
-          resolved_type.respond_to?(:decorator_metadata) ? resolved_type.decorator_metadata&.scoped_proc : nil
-        end
+        resolved_type_attributes.decorator_metadata&.scoped_proc
       end
 
-      def resolved_type
-        @resolved_type ||= options[:unresolved_type]&.resolve_type(value, graphql_context)
+      def resolved_type_attributes
+        @resolved_type_attributes ||= begin
+          GraphQL::Decorate::TypeAttributes.new(options[:unresolved_type]&.resolve_type(value, graphql_context))
+        end
       end
     end
   end
