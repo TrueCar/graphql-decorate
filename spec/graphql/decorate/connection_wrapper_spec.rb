@@ -3,14 +3,17 @@
 require 'spec_helper'
 
 describe GraphQL::Decorate::ConnectionWrapper do
-  subject(:connection_wrapper) { described_class.wrap(connection, context, options) }
+  subject(:connection_wrapper) { described_class.wrap(connection, type, context) }
 
+  let(:type) { PostType }
   let(:value) { [{ first_name: 'Bob', last_name: 'Boberson', published: true }] }
   let(:connection) do
     GraphQL::Pagination::ArrayConnection.new(value, field: BaseField.new(name: 'posts', null: false, type: PostType))
   end
-  let(:context) { GraphQL::Query::Context.new(query: GraphQL::Query.new(Schema), values: nil, object: nil) }
-  let(:options) { { decorator_class: PostDecorator } }
+  let(:context) do
+    GraphQL::Query::Context.new(query: GraphQL::Query.new(Schema),
+                                values: { current_field: instance_double('field', type: type) }, object: nil)
+  end
 
   before { allow(connection).to receive(:nodes).and_return(value) }
 

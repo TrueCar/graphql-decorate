@@ -4,38 +4,32 @@ module GraphQL
   module Decorate
     # Wraps a GraphQL::Pagination::ConnectionWrapper object to decorate values after pagination is applied.
     class ConnectionWrapper
+      # @param connection [GraphQL::Pagination::Connection] ConnectionWrapper being decorated
+      # @param node_type [GraphQL::Schema::Object] Type class of the connection's node
+      # @param context [GraphQL::Query::Context] Current query context
+      def self.wrap(connection, node_type, context)
+        @connection_class = connection.class
+        new(connection, node_type, context)
+      end
+
       # @return [GraphQL::Pagination::Connection] ConnectionWrapper being decorated
       attr_reader :connection
 
-      # @return [GraphQL::Query::Context] Current query context
-      attr_reader :context
-
-      # @return [Hash] Options provided to the field extension
-      attr_reader :options
-
       # @param connection [GraphQL::Pagination::Connection] ConnectionWrapper being decorated
+      # # @param node_type [GraphQL::Schema::Object] Type class of the connection's node
       # @param context [GraphQL::Query::Context] Current query context
-      # @param options [Hash] Options provided to the field extension
-      def self.wrap(connection, context, options)
-        @connection_class = connection.class
-        new(connection, context, options)
-      end
-
-      # @param connection [GraphQL::Pagination::Connection] ConnectionWrapper being decorated
-      # @param context [GraphQL::Query::Context] Current query context
-      # @param options [Hash] Options provided to the field extension
-      def initialize(connection, context, options)
+      def initialize(connection, node_type, context)
         @connection = connection
+        @node_type = node_type
         @context = context
-        @options = options
       end
 
       # @return [Array] Decorated nodes after pagination is applied
       def nodes
         nodes = @connection.nodes
         nodes.map do |node|
-          unresolved_field = GraphQL::Decorate::UndecoratedField.new(node, connection.parent, connection.field.owner,
-                                                                     context, options)
+          unresolved_field = GraphQL::Decorate::UndecoratedField.new(node, node_type, connection.parent,
+                                                                     connection.field.owner, context)
           GraphQL::Decorate::Decoration.decorate(unresolved_field)
         end
       end
@@ -59,6 +53,8 @@ module GraphQL
       end
 
       private
+
+      attr_reader :node_type, :context
 
       def method_missing(symbol, *args, &block)
         @connection.send(symbol, *args, &block) || super

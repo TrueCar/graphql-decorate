@@ -4,7 +4,7 @@ require 'spec_helper'
 
 describe GraphQL::Decorate::FieldExtension do
   subject(:field_extension) do
-    described_class.new(field: field, options: options).after_resolve(context: context, object: object, value: value)
+    described_class.new(field: field, options: {}).after_resolve(context: context, object: object, value: value)
   end
 
   shared_examples('decorated value') do |decorator_class|
@@ -65,9 +65,12 @@ describe GraphQL::Decorate::FieldExtension do
     end
   end
 
+  let(:type) { PostType }
   let(:field) { nil }
-  let(:options) { { decorator_class: PostDecorator } }
-  let(:context) { GraphQL::Query::Context.new(query: GraphQL::Query.new(Schema), values: nil, object: nil) }
+  let(:context) do
+    GraphQL::Query::Context.new(query: GraphQL::Query.new(Schema),
+                                values: { current_field: instance_double('field', type: type) }, object: nil)
+  end
   let(:object) { BlogType.send(:new, { name: 'My Blog', active: true }, context) }
 
   context 'when the value being resolved is a single object' do
@@ -90,35 +93,35 @@ describe GraphQL::Decorate::FieldExtension do
     end
 
     context 'when resolving the type at runtime with a decorator class' do
-      let(:options) { { unresolved_type: Icon } }
+      let(:type) { Icon }
       let(:value) { {} }
 
       it_behaves_like 'decorated value', MissingDecorator
     end
 
     context 'when resolving the type with a decorator class evaluator' do
-      let(:options) { { unresolved_type: Icon } }
+      let(:type) { Icon }
       let(:value) { { url: 'https://www.image.com' } }
 
       it_behaves_like 'decorated value', ImageDecorator
     end
 
     context 'when resolving the type without a decorator class' do
-      let(:options) { { unresolved_type: Icon } }
+      let(:type) { Icon }
       let(:value) { { file_path: '/path/to/file' } }
 
       it_behaves_like 'undecorated value'
     end
 
     context 'when resolving the value with a decorator evaluator and a matching object' do
-      let(:options) { { decorator_evaluator: CommentType.decorator_evaluator } }
+      let(:type) { CommentType }
       let(:value) { { verified_user: true, message: 'My comment 1' } }
 
       it_behaves_like 'decorated value', VerifiedCommentDecorator
     end
 
     context 'when resolving the value with a decorator evaluator and without a matching object' do
-      let(:options) { { decorator_evaluator: CommentType.decorator_evaluator } }
+      let(:type) { CommentType }
 
       it_behaves_like 'undecorated value'
     end
@@ -128,10 +131,10 @@ describe GraphQL::Decorate::FieldExtension do
     end
 
     context 'when a decorator metadata evaluator is provided' do
-      let(:options) { { decorator_class: PostDecorator, decorator_metadata: PostType.decorator_metadata } }
+      let(:type) { PostType }
 
       it 'populates decorator metadata using the evaluated data' do
-        custom_context = options[:decorator_metadata].unscoped_proc.call(value, {})
+        custom_context = type.decorator_metadata.unscoped_proc.call(value, {})
         expect(field_extension.context).to include({ graphql: true }.merge(custom_context))
       end
     end
@@ -157,21 +160,21 @@ describe GraphQL::Decorate::FieldExtension do
     end
 
     context 'when resolving the type at runtime with a decorator class' do
-      let(:options) { { unresolved_type: Icon } }
+      let(:type) { Icon }
       let(:value) { [{}] }
 
       it_behaves_like 'decorated array', MissingDecorator
     end
 
     context 'when resolving the type at runtime with a decorator class evaluator' do
-      let(:options) { { unresolved_type: Icon } }
+      let(:type) { Icon }
       let(:value) { [{ url: 'https://www.image.com' }] }
 
       it_behaves_like 'decorated array', ImageDecorator
     end
 
     context 'when resolving the type at runtime without a decorator class' do
-      let(:options) { { unresolved_type: Icon } }
+      let(:type) { Icon }
       let(:value) { [{ file_path: '/path/to/file' }] }
 
       it_behaves_like 'undecorated array'
@@ -196,7 +199,7 @@ describe GraphQL::Decorate::FieldExtension do
     end
 
     context 'when resolving the value with a decorator evaluator and a matching object' do
-      let(:options) { { decorator_evaluator: CommentType.decorator_evaluator } }
+      let(:type) { CommentType }
       let(:value) do
         [{ verified_user: true, message: 'My comment 1' }, { verified_user: false, message: 'My comment 2' }]
       end
@@ -219,19 +222,17 @@ describe GraphQL::Decorate::FieldExtension do
     end
 
     context 'when the resolved object does not match' do
-      let(:options) { { decorator_evaluator: CommentType.decorator_evaluator } }
+      let(:type) { CommentType }
       let(:value) { [{ message: 'My comment 1' }] }
 
       it_behaves_like 'undecorated array'
     end
 
     context 'when decorator metadata is provided' do
-      let(:options) do
-        { decorator_class: PostDecorator, decorator_metadata: PostType.decorator_metadata }
-      end
+      let(:type) { PostType }
 
       it 'populates decorator metadata using the evaluated data' do
-        custom_context = options[:decorator_metadata].unscoped_proc.call(value.first, {})
+        custom_context = type.decorator_metadata.unscoped_proc.call(value.first, {})
         expect(field_extension.first.context).to include({ graphql: true }.merge(custom_context))
       end
     end
