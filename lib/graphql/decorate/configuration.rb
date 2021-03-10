@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module GraphQL
   module Decorate
     # Allows overriding default decoration and custom collection class behavior.
@@ -9,8 +11,8 @@ module GraphQL
       attr_accessor :custom_collection_classes
 
       def initialize
-        @evaluate_decorator = lambda do |decorator_class, object, context|
-          decorator_class.decorate(object, context: context)
+        @evaluate_decorator = lambda do |decorator_class, object, metadata|
+          decorator_class.decorate(object, context: metadata)
         end
         @custom_collection_classes = []
       end

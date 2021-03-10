@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module GraphQL
   module Decorate
     # Extracts configured decorator attributes from a GraphQL::Schema::Object type.
@@ -11,6 +12,11 @@ module GraphQL
         @type = type
       end
 
+      # @return [Boolean] True if the type can be decorated, false otherwise
+      def decoratable?
+        !!(decorator_class || decorator_evaluator || unresolved_type?)
+      end
+
       # @return [Class, nil] Decorator class for the type if available
       def decorator_class
         get_attribute(:decorator_class)
@@ -21,9 +27,9 @@ module GraphQL
         get_attribute(:decorator_evaluator)
       end
 
-      # @return [Proc, nil] Decorator context evaluator for the type if available
-      def decorator_context_evaluator
-        get_attribute(:decorator_context_evaluator)
+      # @return [Proc, nil] Decorator metadata evaluator for the type if available
+      def decorator_metadata
+        get_attribute(:decorator_metadata)
       end
 
       # @return [GraphQL::Schema::Object, nil] Decorator evaluator for the type if available

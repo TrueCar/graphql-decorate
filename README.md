@@ -61,22 +61,26 @@ In this example, the `Rectangle` type is being decorated with a `RectangleDecora
 ### Decorators
 By default, `graphql-decorate` is set up to work with [`draper`](https://github.com/drapergem/draper) style decorators. These decorators 
 provide a `decorate` method that wraps the original object and returns an instance of the 
-decorator. They can also take in an additional context hash.
+decorator. They can also take in additional metadata.
 ```ruby
-RectangleDecorator.decorate(rectangle, context)
+RectangleDecorator.decorate(rectangle, context: metadata)
 ```
 If you are using a different decorator pattern then you can override this default behavior in 
 the configuration.
 ```ruby
 GraphQL::Decorate.configure do |config|
-  config.decorate do |decorator_class, object, _context|
+  config.decorate do |decorator_class, object, _metadata|
     decorator_class.decorate_differently(object)
   end
 end
 ```
 
 ### Types
-Three methods are made available on your type classes
+Two methods are made available on your type classes: `decorate_with` and `decorate_metadata`. 
+Every method that yields the underlying object will also yield the current GraphQL `context`. 
+If decoration depends on some context in the current query then you can access it when the field  
+is resolved.
+
 #### decorate_with
 `decorate_with` accepts a decorator class that will decorate every instance of your type.
 ```ruby
@@ -85,12 +89,11 @@ class Rectangle < GraphQL::Schema::Object
 end
 ```
 
-#### decorate_when
-`decorate_when` accepts a block which yields the underlying object. If you have multiple 
+`decorate_with` optionally accepts a block which yields the underlying object. If you have multiple 
 possible decorator classes you can return the one intended for the underling object.
 ```ruby
 class Rectangle < GraphQL::Schema::Object
-  decorate_when do |object|
+  decorate_with do |object, _graphql_context|
     if object.length == object.width
       SquareDecorator
     else
@@ -100,30 +103,50 @@ class Rectangle < GraphQL::Schema::Object
 end
 ```
 
-#### decorator_context
-`decorator_context` accepts a block which yields the underlying object. If your decorator pattern 
-allows additional context being passed into the decorators, you can define it here.
+#### decorate_metadata
+If your decorator pattern allows additional metadata to be passed into the decorators, you can 
+define it here. By default every metadata hash will contain `{ graphql: true }`. This is 
+useful if your decorator logic needs to diverge when used in a GraphQL context. Ideally your 
+decorators are agnostic to where they are being used, but it is available if needed.
+
+`decorate_metadata` yields a `GraphQL::Decorate::Metadata` metadata instance. It responds to two 
+methods: `unscoped` and `scoped`. `unscoped` sets metadata for a resolved field. `scoped` sets 
+metadata for a resolved field and all of its child fields. `unscoped` and `scoped` are expected 
+to return `Hash`s.
+
 ```ruby
 class Rectangle < GraphQL::Schema::Object
-  decorator_context do |object|
-    {
-      name: object.name
-    }
+  decorate_metadata do |metadata| 
+   metadata.unscoped do |object, _graphql_context| 
+     { 
+       name: object.name
+     }
+   end
+   
+   metadata.scoped do |object, _graphql_context|
+     {
+       inside_rectangle: true
+     }
+   end
   end
 end
 ```
-`RectangleDecorator` will be initialized with a context of `{ name: <object_name> }`. 
+`RectangleDecorator` will be initialized with metadata `{ name: <object_name>,
+inside_rectangle: true, graphql: true }`. All child fields of `Rectangle` will be initialized 
+with metadata `{ inside_rectangle: true, graphql: true }`.
 
 #### Combinations
-You can mix and match these methods to suit your needs. Note that if `decorate_with` and 
-`decorate_when` are both provided that `decorate_with` will take precedence.
+You can mix and match these methods to suit your needs. Note that if `unscoped` and 
+`scoped` are both provided for metadata that `scoped` will override any shared keys.
 ```ruby
 class Rectangle < GraphQL::Schema::Object
   decorate_with RectangleDecorator
-  decorator_context do |object|
-    {
-      name: object.name
-    }
+  decorate_metadata do |metadata|
+   metadata.scoped do |object, _graphql_context|
+      {
+        name: object.name
+      } 
+    end
   end
 end
 ```
@@ -141,8 +164,11 @@ end
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to 
+run the tests. You can also run `bin/console` for an interactive prompt that will allow you to 
+experiment.
 
 ## License
 
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+The gem is available as open source under the terms of the 
+[MIT License](https://opensource.org/licenses/MIT).

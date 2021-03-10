@@ -1,0 +1,14 @@
+require:
+  rubocop-rspec
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 2.6
+  SuggestExtensions: false
+RSpec/FilePath:
+  CustomTransform:
+    GraphQL: graphql
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*.rb'
+RSpec/MessageSpies:
+  EnforcedStyle: receive
