@@ -31,7 +31,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'graphql', '>= 1.3', '< 2'
 
   spec.add_development_dependency 'bundler', '>= 2'
-  spec.add_development_dependency 'rake', '~> 10.0'
+  spec.add_development_dependency 'rake', '>= 12.3.3'
   spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'rubocop', ' >= 1.11.0 '
   spec.add_development_dependency 'rubocop-rspec', '2.2.0'
