@@ -1,4 +1,5 @@
 [![Gem Version](https://badge.fury.io/rb/graphql-decorate.svg)](https://badge.fury.io/rb/graphql-decorate)
+![CI](https://github.com/TrueCar/graphql-decorate/actions/workflows/ci.yml/badge.svg)
 
 # GraphQL Decorate
 
