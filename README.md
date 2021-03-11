@@ -1,3 +1,5 @@
+[![Gem Version](https://badge.fury.io/rb/graphql-decorate.svg)](https://badge.fury.io/rb/graphql-decorate)
+
 # GraphQL Decorate
 
 `graphql-decorate` adds an easy-to-use interface for decorating types in [`graphql-ruby`](https://github.com/rmosolgo/graphql-ruby). It lets 
