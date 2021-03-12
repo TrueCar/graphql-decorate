@@ -24,7 +24,7 @@ Or install it yourself as:
 
 Once the gem is installed, you need to add the integrations to your base type and field classes. 
 ```ruby
-class BaseType < GraphQL::Schema::Object
+class BaseObject < GraphQL::Schema::Object
   extend GraphQL::Decorate::ObjectIntegration
 end
 
@@ -51,7 +51,7 @@ class RectangleDecorator < BaseDecorator
   end
 end
 
-class Rectangle < GraphQL::Schema::Object
+class Rectangle < BaseObject
   decorate_with RectangleDecorator
   
   field :area, Int, null: false
