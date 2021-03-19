@@ -9,22 +9,16 @@ module GraphQL
 
       # @param value [Object] Value to be decorated
       # @param type [GraphQL::Schema::Object] Type class of value to be decorated
-      # @param parent_value [Object] Value of the parent field
-      # @param parent_type [GraphQL::Schema::Object, Void] Type class of the parent field
       # @param graphql_context [GraphQL::Query::Context] Current query graphql_context
-      # rubocop:disable Metrics/ParameterLists
-      def initialize(value, type, parent_value, parent_type, graphql_context, index = nil)
+      def initialize(value, type, graphql_context, index = nil)
         @value = value
         @type = type
         @type_attributes = GraphQL::Decorate::TypeAttributes.new(type)
-        @parent_value = parent_value
-        @parent_type = parent_type
         @graphql_context = graphql_context
         @default_metadata = { graphql: true }
         @path = graphql_context[:current_path].dup
         @path << index if index
       end
-      # rubocop:enable Metrics/ParameterLists
 
       # @return [Class] Decorator class for the current field
       def decorator_class
@@ -42,7 +36,7 @@ module GraphQL
 
       private
 
-      attr_reader :type, :type_attributes, :graphql_context, :parent_value, :parent_type, :default_metadata, :path
+      attr_reader :type, :type_attributes, :graphql_context, :default_metadata, :path
 
       def unscoped_metadata
         unscoped_metadata_proc&.call(value, graphql_context) || {}
