@@ -22,16 +22,19 @@ Or install it yourself as:
 
     $ gem install graphql-decorate
 
-Once the gem is installed, you need to add the integrations to your base type and field classes. 
+Once the gem is installed, you need to add the plugin to  your schema and the integration into 
+your base object class. 
 ```ruby
-class BaseObject < GraphQL::Schema::Object
-  extend GraphQL::Decorate::ObjectIntegration
+class Schema < GraphQL::Schema
+  use GraphQL::Decorate
 end
 
-class BaseField < GraphQL::Schema::Field
-  include GraphQL::Decorate::FieldIntegration
+class BaseObject < GraphQL::Schema::Object
+  include GraphQL::Decorate::ObjectIntegration
 end
 ```
+Note that `use GraphQL::Decorate` must be included in the schema _after_ `query` and `mutation` 
+so that the fields to be extended are initialized first.
 
 ## Usage
 

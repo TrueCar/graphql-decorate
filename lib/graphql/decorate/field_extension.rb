@@ -4,6 +4,8 @@ module GraphQL
   module Decorate
     # Extension run after fields are resolved to decorate their value.
     class FieldExtension < GraphQL::Schema::FieldExtension
+      include ExtractType
+
       # Extension to be called after lazy loading.
       # @param context [GraphQL::Query::Context] The current GraphQL query context.
       # @param value [Object, GraphQL::Schema::Object, GraphQL::Pagination::Connection] The object being decorated. Can
@@ -18,23 +20,27 @@ module GraphQL
 
       private
 
-      def resolve_decorated_value(value, parent_object, context)
+      def resolve_decorated_value(value, parent, context)
         type = extract_type(context.to_h[:current_field].type)
-        if value.is_a?(GraphQL::Pagination::Connection)
-          GraphQL::Decorate::ConnectionWrapper.wrap(value, type, context)
-        elsif collection?(value)
-          value.map do |item|
-            decorate(item, type, parent_object.object, parent_object.class, context)
+        parent_value = extract_parent_value(parent)
+        parent_type = extract_parent_type(parent)
+
+        if collection?(value)
+          value.each_with_index.map do |item, index|
+            decorate(item, type, parent_value, parent_type, context, index)
           end
         else
-          decorate(value, type, parent_object.object, parent_object.class, context)
+          decorate(value, type, parent_value, parent_type, context)
         end
       end
 
-      def decorate(value, type, parent_object, parent_type, context)
-        undecorated_field = GraphQL::Decorate::UndecoratedField.new(value, type, parent_object, parent_type, context)
+      # rubocop:disable Metrics/ParameterLists
+      def decorate(value, type, parent_value, parent_type, context, index = nil)
+        undecorated_field = GraphQL::Decorate::UndecoratedField.new(value, type, parent_value, parent_type, context,
+                                                                    index)
         GraphQL::Decorate::Decoration.decorate(undecorated_field)
       end
+      # rubocop:enable Metrics/ParameterLists
 
       def collection?(value)
         collection_classes.any? { |c| value.is_a?(c) }
@@ -46,11 +52,27 @@ module GraphQL
         klasses
       end
 
-      def extract_type(field)
-        if field.respond_to?(:of_type)
-          extract_type(field.of_type)
+      def extract_parent_value(parent)
+        parent_object = parent.object
+        case parent_object
+        when GraphQL::Pagination::Connection
+          parent_object.parent.respond_to?(:object) ? parent_object.parent.object : parent_object.parent
+        when GraphQL::Pagination::Connection::Edge
+          parent_object.parent
         else
-          field
+          parent_object
+        end
+      end
+
+      def extract_parent_type(parent)
+        parent_object = parent.object
+        case parent_object
+        when GraphQL::Pagination::Connection
+          parent_object.field.owner
+        when GraphQL::Pagination::Connection::Edge
+          nil
+        else
+          parent_object.class
         end
       end
     end

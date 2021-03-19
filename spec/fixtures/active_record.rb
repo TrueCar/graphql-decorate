@@ -13,5 +13,9 @@ module ActiveRecord
     def first
       @collection.first
     end
+
+    def each_with_index(&block)
+      @collection.each_with_index(&block)
+    end
   end
 end

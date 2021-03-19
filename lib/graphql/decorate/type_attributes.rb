@@ -39,7 +39,7 @@ module GraphQL
 
       # @return [Boolean] True if type is not yet resolved, false if it is resolved
       def unresolved_type?
-        type.respond_to?(:resolve_type)
+        type.respond_to?(:kind) && [GraphQL::TypeKinds::INTERFACE, GraphQL::TypeKinds::UNION].include?(type.kind)
       end
 
       # @return [Boolean] True if type is resolved, false if it is not resolved
@@ -47,19 +47,10 @@ module GraphQL
         !unresolved_type?
       end
 
-      # @return [Boolean] True if type is a connection, false if it is resolved
-      def connection?
-        resolved_type? && type.respond_to?(:node_type)
-      end
-
       private
 
       def get_attribute(name)
-        if connection?
-          type.node_type.respond_to?(name) && type.node_type.public_send(name)
-        elsif resolved_type?
-          type.respond_to?(name) ? type.public_send(name) : nil
-        end
+        type.respond_to?(name) ? type.public_send(name) : nil
       end
     end
   end

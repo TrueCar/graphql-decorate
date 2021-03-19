@@ -31,16 +31,6 @@ describe GraphQL::Decorate::FieldExtension do
     end
   end
 
-  shared_examples('decorated connection') do
-    it 'is a ConnectionWrapper' do
-      expect(field_extension).to be_an(GraphQL::Decorate::ConnectionWrapper)
-    end
-
-    it 'sets the connection on the wrapper' do
-      expect(field_extension.connection).to eq(value)
-    end
-  end
-
   shared_examples('undecorated value') do
     it 'decorates the value provided using the class in the options' do
       expect(field_extension).not_to be_a(Decorator)
@@ -69,7 +59,8 @@ describe GraphQL::Decorate::FieldExtension do
   let(:field) { nil }
   let(:context) do
     GraphQL::Query::Context.new(query: GraphQL::Query.new(Schema),
-                                values: { current_field: instance_double('field', type: type) }, object: nil)
+                                values: { current_field: instance_double('field', type: type), current_path: [] },
+                                object: nil)
   end
   let(:object) { BlogType.send(:new, { name: 'My Blog', active: true }, context) }
 
@@ -236,14 +227,6 @@ describe GraphQL::Decorate::FieldExtension do
         expect(field_extension.first.context).to include({ graphql: true }.merge(custom_context))
       end
     end
-  end
-
-  context 'when the value being resolved is a connection' do
-    let(:value) do
-      GraphQL::Pagination::ArrayConnection.new([{ first_name: 'Bob', last_name: 'Boberson', published: true }])
-    end
-
-    it_behaves_like 'decorated connection'
   end
 
   context 'when the value is nil' do

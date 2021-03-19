@@ -10,16 +10,21 @@ module GraphQL
       # @param value [Object] Value to be decorated
       # @param type [GraphQL::Schema::Object] Type class of value to be decorated
       # @param parent_value [Object] Value of the parent field
-      # @param parent_type [GraphQL::Schema::Object] Type class of the parent field
+      # @param parent_type [GraphQL::Schema::Object, Void] Type class of the parent field
       # @param graphql_context [GraphQL::Query::Context] Current query graphql_context
-      def initialize(value, type, parent_value, parent_type, graphql_context)
+      # rubocop:disable Metrics/ParameterLists
+      def initialize(value, type, parent_value, parent_type, graphql_context, index = nil)
         @value = value
+        @type = type
         @type_attributes = GraphQL::Decorate::TypeAttributes.new(type)
         @parent_value = parent_value
         @parent_type = parent_type
         @graphql_context = graphql_context
         @default_metadata = { graphql: true }
+        @path = graphql_context[:current_path].dup
+        @path << index if index
       end
+      # rubocop:enable Metrics/ParameterLists
 
       # @return [Class] Decorator class for the current field
       def decorator_class
@@ -37,34 +42,44 @@ module GraphQL
 
       private
 
-      attr_reader :type_attributes, :graphql_context, :parent_value, :parent_type, :default_metadata
+      attr_reader :type, :type_attributes, :graphql_context, :parent_value, :parent_type, :default_metadata, :path
 
       def unscoped_metadata
         unscoped_metadata_proc&.call(value, graphql_context) || {}
       end
 
       def scoped_metadata
-        merged_scoped_metadata = existing_scoped_metadata.merge(new_scoped_metadata)
-        graphql_context.scoped_set!(:scoped_decorator_metadata, merged_scoped_metadata)
-        merged_scoped_metadata
+        insert_scoped_metadata(new_scoped_metadata)
       end
 
       def new_scoped_metadata
-        scoped_metadata = scoped_metadata_proc&.call(value, graphql_context) || {}
-        parent_scoped_metadata.merge(scoped_metadata)
+        scoped_metadata_proc&.call(value, graphql_context) || {}
       end
 
-      def parent_scoped_metadata
-        parent_type_attributes.decorator_metadata&.scoped_proc&.call(parent_value, graphql_context) || {}
-      end
+      # rubocop:disable Metrics/AbcSize
+      def insert_scoped_metadata(metadata)
+        # Save metadata at each level in the path of the current execution.
+        # If a field's direct parent does not have metadata then it will
+        # use the next highest metadata in the tree that matches its path.
+        scoped_metadata = graphql_context[:scoped_decorator_metadata] ||= {}
+        prev_value = {}
 
-      def parent_type_attributes
-        GraphQL::Decorate::TypeAttributes.new(parent_type)
-      end
+        path[0...-1].each do |step|
+          # Write the parent's metadata to the child if it doesn't already exist
+          scoped_metadata[step] = { value: prev_value, children: {} } unless scoped_metadata[step]
+          # Update the next parent's metadata to include anything at the current level
+          prev_value = prev_value.merge(scoped_metadata[step][:value])
+          # Move to the child fields and repeat
+          scoped_metadata = scoped_metadata[step][:children]
+        end
 
-      def existing_scoped_metadata
-        graphql_context[:scoped_decorator_metadata] || {}
+        # The last step in the path is the current field, merge in new metadata from
+        # the field itself and return it.
+        merged_metadata = { value: prev_value.merge(metadata), children: {} }
+        scoped_metadata[path[-1]] = merged_metadata
+        merged_metadata[:value]
       end
+      # rubocop:enable Metrics/AbcSize
 
       def unscoped_metadata_proc
         type_attributes.decorator_metadata&.unscoped_proc || resolve_unscoped_proc
@@ -93,7 +108,11 @@ module GraphQL
       def resolved_type_attributes
         @resolved_type_attributes ||= begin
           if type_attributes.unresolved_type?
-            GraphQL::Decorate::TypeAttributes.new(type_attributes.type.resolve_type(value, graphql_context))
+            if type.respond_to?(:resolve_type)
+              GraphQL::Decorate::TypeAttributes.new(type.resolve_type(value, graphql_context))
+            else
+              graphql_context.schema.resolve_type(type, value, graphql_context)
+            end
           end
         end
       end
