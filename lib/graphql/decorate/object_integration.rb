@@ -4,6 +4,12 @@ module GraphQL
   module Decorate
     # Extends GraphQL::Schema::Object classes with methods to set the desired decorator class and context.
     module ObjectIntegration
+      # @param base [Class] Base class the module is being included in
+      # @return [nil]
+      def self.included(base)
+        base.extend(self)
+      end
+
       # Decorate the type with a decorator class.
       # @param klass [Class] Class the object should be decorated with.
       def decorate_with(klass = nil, &block)

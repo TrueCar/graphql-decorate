@@ -5,4 +5,10 @@ class Schema < GraphQL::Schema
   query ::Query
 
   orphan_types ImageType
+
+  use GraphQL::Decorate
+
+  def self.resolve_type(_type, _obj, _ctx)
+    AuthenticatedUser
+  end
 end

@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-describe GraphQL::Decorate::FieldIntegration do
-  subject(:query_result) { Schema.execute(query) }
+describe Schema do
+  subject(:query_result) { described_class.execute(query) }
 
   let(:query) { <<-GRAPHQL }
     query {
@@ -316,5 +316,26 @@ describe GraphQL::Decorate::FieldIntegration do
     end
     # rubocop:enable RSpec/ExampleLength
     # rubocop:enable RSpec/MultipleExpectations
+  end
+
+  context 'when resolving unions without a resolve_type method' do
+    let(:query) { <<-GRAPHQL }
+      query {
+        blog {
+          user {
+            ...on AuthenticatedUser {
+              name
+            }
+            ...on UnauthenticatedUser {
+              generatedUsername
+            }
+          }
+        }
+      }
+    GRAPHQL
+
+    it 'uses the schema' do
+      expect(query_result['data']['blog']['user']['name']).to eq('Slob Sloberson')
+    end
   end
 end

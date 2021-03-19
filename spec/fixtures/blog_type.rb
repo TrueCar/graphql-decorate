@@ -22,6 +22,7 @@ class BlogType < BaseObject
   field :title, String, null: false
   field :posts, [PostType], null: false
   field :post_connection, PostType.connection_type, null: false
+  field :user, User, null: false
 
   def posts
     [{ first_name: 'Bob', last_name: 'Boberson', published: true },
@@ -30,5 +31,9 @@ class BlogType < BaseObject
 
   def post_connection
     posts
+  end
+
+  def user
+    { authenticated: true }
   end
 end

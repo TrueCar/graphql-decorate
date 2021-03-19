@@ -28,12 +28,6 @@ jobs:
     - name: Run RuboCop
       run: bundle exec rubocop
 
-    - name: Upload coverage results
-      uses: actions/upload-artifact@master
-      with:
-        name: coverage-report
-        path: coverage
-
     - name: Check documentation completion
       run: |
         completion_percentage=$(bundle exec yard | tee /dev/stdout  | tail -1 | cut -d'%' -f1 | xargs)
