@@ -54,7 +54,7 @@ class RectangleDecorator < BaseDecorator
   end
 end
 
-class Rectangle < BaseObject
+class RectangleType < BaseObject
   decorate_with RectangleDecorator
   
   field :area, Int, null: false
@@ -123,17 +123,17 @@ to return `Hash`s.
 ```ruby
 class Rectangle < GraphQL::Schema::Object
   decorate_metadata do |metadata| 
-   metadata.unscoped do |object, _graphql_context| 
-     { 
-       name: object.name
-     }
-   end
+    metadata.unscoped do |object, _graphql_context| 
+      { 
+        name: object.name
+      }
+    end
    
-   metadata.scoped do |object, _graphql_context|
-     {
-       inside_rectangle: true
-     }
-   end
+    metadata.scoped do |object, _graphql_context|
+      {
+        inside_rectangle: true
+      }
+    end
   end
 end
 ```
@@ -148,7 +148,7 @@ You can mix and match these methods to suit your needs. Note that if `unscoped` 
 class Rectangle < GraphQL::Schema::Object
   decorate_with RectangleDecorator
   decorate_metadata do |metadata|
-   metadata.scoped do |object, _graphql_context|
+    metadata.scoped do |object, _graphql_context|
       {
         name: object.name
       } 
