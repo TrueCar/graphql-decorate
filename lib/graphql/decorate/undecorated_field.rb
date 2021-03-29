@@ -100,15 +100,14 @@ module GraphQL
       end
 
       def resolved_type_attributes
-        @resolved_type_attributes ||= begin
-          if type_attributes.unresolved_type?
-            if type.respond_to?(:resolve_type)
-              GraphQL::Decorate::TypeAttributes.new(type.resolve_type(value, graphql_context))
-            else
-              graphql_context.schema.resolve_type(type, value, graphql_context)
-            end
-          end
-        end
+        @resolved_type_attributes ||= if type_attributes.unresolved_type?
+                                        if type.respond_to?(:resolve_type)
+                                          GraphQL::Decorate::TypeAttributes.new(type.resolve_type(value,
+                                                                                                  graphql_context))
+                                        else
+                                          graphql_context.schema.resolve_type(type, value, graphql_context)
+                                        end
+                                      end
       end
     end
   end
