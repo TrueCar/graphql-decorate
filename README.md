@@ -84,8 +84,7 @@ end
 ### Types
 Two methods are made available on your type classes: `decorate_with` and `decorate_metadata`. 
 Every method that yields the underlying object will also yield the current GraphQL `context`. 
-If decoration depends on some context in the current query then you can access it when the field  
-is resolved.
+If decoration depends on some context in the current query then you can access it when the field is resolved.
 
 #### decorate_with
 `decorate_with` accepts a decorator class that will decorate every instance of your type.
