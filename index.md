@@ -51,7 +51,7 @@ class RectangleDecorator < BaseDecorator
   end
 end
 
-class Rectangle < BaseObject
+class RectangleType < BaseObject
   decorate_with RectangleDecorator
   
   field :area, Int, null: false
@@ -81,8 +81,7 @@ end
 ### Types
 Two methods are made available on your type classes: `decorate_with` and `decorate_metadata`. 
 Every method that yields the underlying object will also yield the current GraphQL `context`. 
-If decoration depends on some context in the current query then you can access it when the field  
-is resolved.
+If decoration depends on some context in the current query then you can access it when the field is resolved.
 
 #### decorate_with
 `decorate_with` accepts a decorator class that will decorate every instance of your type.
@@ -120,17 +119,17 @@ to return `Hash`s.
 ```ruby
 class Rectangle < GraphQL::Schema::Object
   decorate_metadata do |metadata| 
-   metadata.unscoped do |object, _graphql_context| 
-     { 
-       name: object.name
-     }
-   end
+    metadata.unscoped do |object, _graphql_context| 
+      { 
+        name: object.name
+      }
+    end
    
-   metadata.scoped do |object, _graphql_context|
-     {
-       inside_rectangle: true
-     }
-   end
+    metadata.scoped do |object, _graphql_context|
+      {
+        inside_rectangle: true
+      }
+    end
   end
 end
 ```
@@ -145,7 +144,7 @@ You can mix and match these methods to suit your needs. Note that if `unscoped` 
 class Rectangle < GraphQL::Schema::Object
   decorate_with RectangleDecorator
   decorate_metadata do |metadata|
-   metadata.scoped do |object, _graphql_context|
+    metadata.scoped do |object, _graphql_context|
       {
         name: object.name
       } 
