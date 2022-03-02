@@ -35,7 +35,7 @@ module GraphQL
     # @param schema_defn [GraphQL::Schema] Current schema class
     # @return [nil]
     def self.use(schema_defn)
-      schema_defn.to_graphql.types.each do |_name, type|
+      schema_defn.types.each do |_name, type|
         next unless type.respond_to?(:fields)
 
         type.fields.each do |_name, field|
