@@ -105,9 +105,18 @@ module GraphQL
                                           GraphQL::Decorate::TypeAttributes.new(type.resolve_type(value,
                                                                                                   graphql_context))
                                         else
-                                          graphql_context.schema.resolve_type(type, value, graphql_context)
+                                          resolve_type_attributes_from_schema
                                         end
                                       end
+      end
+
+      def resolve_type_attributes_from_schema
+        result = graphql_context.schema.resolve_type(type, value, graphql_context)
+        return result unless result.is_a?(Array) && result.size == 2
+
+        result[0]
+          .authorized_new(result[1], graphql_context)
+          .then(&GraphQL::Decorate::TypeAttributes.method(:new))
       end
     end
   end
